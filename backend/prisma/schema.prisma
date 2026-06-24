@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role     Role   @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expenses   Expense[]
+  incomes    Income[]
+  categories Category[]
+  payments   Payment[]
+}
+
+model Expense {
+  id          String  @id @default(uuid())
+  amount      Float
+  description String?
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Income {
+  id     String @id @default(uuid())
+  amount Float
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  name        String
+  amount      Float
+  description String?
+
+  type   PaymentType
+  status PaymentStatus @default(PENDING)
+
+  scheduledAt DateTime
+  paidAt      DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model Category {
+  id    String  @id @default(uuid())
+  name  String
+  icon  String
+  color String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  expenses Expense[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([name, userId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum PaymentType {
+  INCOME
+  EXPENSE
+}

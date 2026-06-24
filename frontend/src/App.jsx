@@ -1,0 +1,48 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+import PublicRoute from "./routes/PublicRoute";
+
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+
+import DashboardLayout from "./components/layouts/DashboardLayout.jsx";
+
+import Resume from "./pages/Resume";
+import Categories from "./pages/Categories";
+import Expenses from "./pages/Expenses";
+import Payments from "./pages/Payments";
+import Goals from "./pages/Goals";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+
+
+        <Route path="/" element={<Home />} />
+
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Resume />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="expenses" element={<Expenses />} />
+          <Route path="payments" element={<Payments />} />
+          <Route path="goals" element={<Goals />} />
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
