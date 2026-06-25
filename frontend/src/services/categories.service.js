@@ -22,3 +22,8 @@ export const deleteCategoryRequest = async (id) => {
     const res = await api.delete(`/categories/${id}`);
     return res.data;
 };
+
+export const getCategoryByIdRequest = async (id) => {
+    const res = await api.get(`/categories/${id}`);
+    return res.data;
+};

@@ -3,7 +3,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutRequest } from "../../services/auth.service";
 import { useNavigate, Outlet } from "react-router-dom";
-
+import { NavLink } from "react-router-dom";
 import {
   Home,
   DollarSign,
@@ -31,7 +31,7 @@ export default function DashboardLayout() {
   });
 
   const menu = [
-    { name: "Inicio", icon: Home, path: "/dashboard" },
+    { name: "Inicio", icon: Home, path: "/dashboard", end: true },
     { name: "Mis Gastos", icon: DollarSign, path: "/dashboard/expenses" },
     { name: "Pagos Futuros", icon: CheckCheck, path: "/dashboard/payments" },
     { name: "Categorías", icon: Folder, path: "/dashboard/categories" },
@@ -67,14 +67,18 @@ export default function DashboardLayout() {
               const Icon = item.icon;
 
               return (
-                <div
+                <NavLink
                   key={i}
-                  onClick={() => navigate(item.path)}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
+                  to={item.path}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
+    ${isActive ? "bg-white/10 text-[#07D896]" : "hover:bg-white/10"}`
+                  }
                 >
                   <Icon size={18} />
                   {open && <span>{item.name}</span>}
-                </div>
+                </NavLink>
               );
             })}
           </nav>

@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 
 
+import Loader from "../components/utils/Loader";
+
 function getNext15na() {
     const today = new Date();
     const day = today.getDate();
@@ -50,7 +52,7 @@ export default function Resume() {
     const upcomingExpenses = data?.upcomingPayments ?? [];
 
     if (isLoading) {
-        return <p className="text-cyan-300">Cargando resumen...</p>;
+        return <Loader />;
     }
 
 

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import moment from "moment";
 const prisma = new PrismaClient();
 
 
@@ -46,7 +46,13 @@ export const getExpenses = async (req, res) => {
             },
         });
 
-        res.json(expenses);
+        const formattedExpenses = expenses.map((exp) => ({
+            ...exp,
+            createdAtFormatted: moment(exp.createdAt).format("DD MMM YYYY HH:mm"),
+        }));
+
+        res.json(formattedExpenses);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching expenses" });

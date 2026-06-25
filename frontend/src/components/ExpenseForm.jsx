@@ -12,7 +12,7 @@ import {
     UtensilsCrossed,
     HeartPulse
 } from "lucide-react";
-
+import Loader from "../components/utils/Loader";
 
 const categoryIcons = {
     car: Car,
@@ -69,6 +69,8 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
 
         if (!isEditing) resetForm();
     };
+
+
 
     return (
         <form

@@ -48,6 +48,7 @@ const COLOR_SWATCHES = [
 
 const DEFAULT_FORM = {
     name: "",
+    description: "",
     color: COLOR_SWATCHES[0],
     icon: ICON_KEYS[0],
 };
@@ -59,6 +60,7 @@ export default function CategoryForm({ category, onSubmit, onClose }) {
         if (category) {
             return {
                 name: category.name ?? "",
+                description: category.description ?? "",
                 color: category.color ?? COLOR_SWATCHES[0],
                 icon: category.icon ?? ICON_KEYS[0],
             };
@@ -138,6 +140,21 @@ export default function CategoryForm({ category, onSubmit, onClose }) {
                         }
                         autoFocus
                         className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none transition-colors focus:border-[#07D896]"
+                    />
+                </div>
+
+                <div className="mt-6 space-y-1.5">
+                    <label className="text-xs font-medium text-[#A9ACB7]">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        placeholder="Descripción de la categoría"
+                        value={form.description}
+                        onChange={(e) =>
+                            setForm({ ...form, description: e.target.value })
+                        }
+                        className="w-full min-h-25 resize-none rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none transition-colors focus:border-[#07D896]"
                     />
                 </div>
 

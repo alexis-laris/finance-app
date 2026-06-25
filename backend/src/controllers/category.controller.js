@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-
+import moment from "moment";
 const prisma = new PrismaClient();
 
 export const createCategory = async (req, res) => {
     try {
-        const { name, icon, color } = req.body;
+        const { name, icon, color, description } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: "Name is required" });
@@ -14,7 +14,8 @@ export const createCategory = async (req, res) => {
             data: {
                 name,
                 icon: icon || "Folder",
-                color: color || "text-gray-500",
+                color: color || "#64748b",
+                description: description || "",
                 userId: req.user.id,
             },
         });
@@ -37,7 +38,13 @@ export const getCategories = async (req, res) => {
             },
         });
 
-        res.json(categories);
+        const formattedCategories = categories.map((cat) => ({
+            ...cat,
+            createdAtFormatted: moment(cat.createdAt).format("DD MMM YYYY"),
+        }));
+
+        res.json(formattedCategories);
+
     } catch (error) {
         console.error("GET_CATEGORIES_ERROR:", error);
         res.status(500).json({ message: "Error fetching categories" });
@@ -47,7 +54,7 @@ export const getCategories = async (req, res) => {
 export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, icon, color } = req.body;
+        const { name, icon, color, description } = req.body;
 
         const existing = await prisma.category.findFirst({
             where: {
@@ -66,6 +73,7 @@ export const updateCategory = async (req, res) => {
                 name,
                 icon,
                 color,
+                description
             },
         });
 
@@ -99,5 +107,67 @@ export const deleteCategory = async (req, res) => {
     } catch (error) {
         console.error("DELETE_CATEGORY_ERROR:", error);
         res.status(500).json({ message: "Error deleting category" });
+    }
+};
+
+export const getCategoryById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const category = await prisma.category.findFirst({
+            where: {
+                id,
+                userId: req.user.id,
+            },
+            include: {
+                expenses: {
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                },
+                payments: {
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                },
+            },
+        });
+
+        if (!category) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+
+
+        const totalExpenses = category.expenses.reduce(
+            (sum, exp) => sum + exp.amount,
+            0
+        );
+
+
+        const totalPayments = category.payments.reduce(
+            (sum, pay) => sum + pay.amount,
+            0
+        );
+
+        const formattedCategory = {
+            ...category,
+
+            createdAtFormatted: moment(category.createdAt).format("DD MMM YYYY"),
+
+            expensesCount: category.expenses.length,
+            paymentsCount: category.payments.length,
+
+            totalExpenses,
+            totalPayments,
+
+            // 🔥 solo últimos 10 para no saturar el front
+            expenses: category.expenses.slice(0, 10),
+            payments: category.payments.slice(0, 10),
+        };
+
+        res.json(formattedCategory);
+    } catch (error) {
+        console.error("GET_CATEGORY_BY_ID_ERROR:", error);
+        res.status(500).json({ message: "Error fetching category" });
     }
 };
