@@ -182,6 +182,8 @@ export default function Savings() {
                             </div>
 
 
+
+
                             <div className="flex items-center justify-between mt-2">
                                 <span className={`text-xs font-medium ${isCompleted ? "text-emerald-400" : "text-[#07D896]"}`}>
                                     {isCompleted ? "¡Meta completada!" : `${progress.toFixed(1)}%`}
@@ -192,6 +194,10 @@ export default function Savings() {
                                     </span>
                                 )}
                             </div>
+
+                            <p className="text-xs text-gray-500 mt-2">
+                                Finaliza: <span className="text-white font-bold">{goal.deadlineLabel}</span>
+                            </p>
 
 
                             <div className="flex justify-end mt-4">

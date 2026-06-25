@@ -48,7 +48,7 @@ export default function SavingGoalDetail() {
     const deleteContributionMutation = useMutation({
         mutationFn: deleteContributionRequest,
         onSuccess: () => { invalidate(); setDeletingContribution(null); },
-        onError: (err) => console.error("DELETE ERROR:", err),  // 👈
+        onError: (err) => console.error("DELETE ERROR:", err),
     });
 
     if (isLoading) return <div className="text-gray-400 text-sm">Cargando...</div>;
@@ -99,15 +99,13 @@ export default function SavingGoalDetail() {
                 <div className="lg:col-span-3 space-y-5">
 
 
-                    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115] p-5">
+                    <div className="rounded-2xl bg-[#07D896] p-5 text-black">
 
-                        <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full blur-3xl opacity-20 bg-[#07D896]" />
-
-                        <p className="text-xs text-gray-400 mb-2">
+                        <p className="text-sm font-medium opacity-80">
                             Meta de ahorro
                         </p>
 
-                        <h2 className="text-xl font-bold text-white">
+                        <h2 className="text-xl font-bold">
                             {goal.name}
                         </h2>
 
@@ -116,34 +114,32 @@ export default function SavingGoalDetail() {
                                 {formatToMXN(stats.totalSaved)}
                             </p>
 
-                            <p className="text-sm text-gray-400">
+                            <p className="text-sm opacity-80">
                                 de {formatToMXN(goal.targetAmount)}
                             </p>
                         </div>
 
-                        <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mt-5">
+                        <div className="w-full h-2 bg-black/10 rounded-full overflow-hidden mt-5">
                             <div
-                                className="h-full bg-[#07D896] rounded-full transition-all duration-500"
+                                className="h-full bg-black rounded-full transition-all duration-500"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
 
                         <div className="flex justify-between mt-2">
-                            <span className="text-xs text-[#07D896]">
+                            <span className="text-xs opacity-80">
                                 {progress.toFixed(1)}% completado
-
                             </span>
-
-
                         </div>
 
-                        <div className="absolute bottom-0 left-0 h-1 w-full bg-[#07D896]" />
                     </div>
 
 
-                    <div className="rounded-2xl bg-[#07D896] p-5 text-black">
+                    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115] p-5 text-white">
 
-                        <p className="text-sm font-medium opacity-80">
+                        <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full blur-3xl opacity-20 bg-[#07D896]" />
+
+                        <p className="text-sm text-gray-400">
                             Te faltan ahorrar
                         </p>
 
@@ -151,7 +147,7 @@ export default function SavingGoalDetail() {
                             {formatToMXN(stats.remaining)}
                         </h3>
 
-                        <p className="text-sm mt-2 opacity-80">
+                        <p className="text-sm text-gray-400 mt-2">
                             para completar tu meta
                         </p>
 

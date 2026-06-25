@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import moment from "moment";
 const prisma = new PrismaClient();
 
 
@@ -24,7 +24,7 @@ export const createPayment = async (req, res) => {
                 type,
                 scheduledAt: new Date(scheduledAt),
                 userId,
-                categoryId, // ✅ directo, sin connect
+                categoryId,
             },
         });
 
@@ -34,6 +34,8 @@ export const createPayment = async (req, res) => {
         res.status(500).json({ message: "Error creating payment" });
     }
 };
+
+
 
 
 export const getPayments = async (req, res) => {
@@ -50,7 +52,13 @@ export const getPayments = async (req, res) => {
             },
         });
 
-        res.json(payments);
+        const formattedPayments = payments.map((p) => ({
+            ...p,
+            scheduledAtLabel: moment(p.scheduledAt).format("DD MMM YYYY"),
+
+        }));
+
+        res.json(formattedPayments);
     } catch (error) {
         console.error("getPayments error:", error);
         res.status(500).json({ message: "Error fetching payments" });

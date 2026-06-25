@@ -305,8 +305,8 @@ export default function Payments() {
                                                 {p.name}
                                             </p>
 
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {new Date(p.scheduledAt).toLocaleDateString()}
+                                            <p className="text-xs text-gray-500 mt-2">
+                                                Fecha programada: <span className="text-white font-bold">{p.scheduledAtLabel}</span>
                                             </p>
 
 

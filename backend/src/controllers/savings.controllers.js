@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import moment from "moment";
 
 const prisma = new PrismaClient();
 
@@ -39,7 +40,14 @@ export const getSavingGoals = async (req, res) => {
             },
         });
 
-        return res.json(goals);
+        const formattedGoals = goals.map((goal) => ({
+            ...goal,
+            deadlineLabel: goal.deadline
+                ? moment(goal.deadline).format("DD MMM YYYY")
+                : null,
+        }));
+
+        return res.json(formattedGoals);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Error obteniendo metas" });
@@ -221,7 +229,7 @@ export const updateContribution = async (req, res) => {
         const { id, contributionId } = req.params;
         const { amount, note } = req.body;
 
-        // Verificar que la meta pertenece al usuario
+
         const goal = await prisma.savingGoal.findFirst({
             where: { id, userId },
         });
@@ -230,7 +238,7 @@ export const updateContribution = async (req, res) => {
             return res.status(404).json({ message: "Meta no encontrada" });
         }
 
-        // Buscar la contribución anterior para calcular la diferencia
+
         const contribution = await prisma.savingGoalContribution.findFirst({
             where: { id: contributionId, savingGoalId: id },
         });
