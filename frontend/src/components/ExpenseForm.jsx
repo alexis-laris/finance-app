@@ -10,9 +10,15 @@ import {
     ShoppingBag,
     Folder,
     UtensilsCrossed,
-    HeartPulse
+    HeartPulse,
+    CreditCard,
+    Gamepad2,
+    Wifi,
+    Smartphone,
+    PiggyBank,
+    Pipette,
+    Check
 } from "lucide-react";
-import Loader from "../components/utils/Loader";
 
 const categoryIcons = {
     car: Car,
@@ -20,6 +26,11 @@ const categoryIcons = {
     shopping: ShoppingBag,
     utensils: UtensilsCrossed,
     health: HeartPulse,
+    creditcard: CreditCard,
+    gamepad2: Gamepad2,
+    wifi: Wifi,
+    smartphone: Smartphone,
+    piggybank: PiggyBank,
     default: Folder,
 };
 
@@ -27,6 +38,7 @@ const DEFAULT_FORM = {
     amount: "",
     description: "",
     categoryId: "",
+    date: "",
 };
 
 export default function ExpenseForm({ expense, onSubmit, onClose }) {
@@ -39,10 +51,22 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
 
     const initialForm = useMemo(() => {
         if (expense) {
+
+            const rawDate = expense.date ?? expense.createdAt;
+
+            const toLocalDatetimeString = (isoString) => {
+                if (!isoString) return "";
+                const date = new Date(isoString);
+
+                const offset = date.getTimezoneOffset() * 60000;
+                return new Date(date - offset).toISOString().slice(0, 16);
+            };
+
             return {
                 amount: expense.amount ?? "",
                 description: expense.description ?? "",
                 categoryId: expense.category?.id ?? "",
+                date: toLocalDatetimeString(rawDate),
             };
         }
 
@@ -60,11 +84,12 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!form.amount || !form.categoryId) return;
+        if (!form.amount) return;
 
         onSubmit({
             ...form,
             amount: Number(form.amount),
+            date: form.date ? new Date(form.date).toISOString() : undefined,
         });
 
         if (!isEditing) resetForm();
@@ -120,7 +145,7 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
                                 onClick={() =>
                                     setForm({
                                         ...form,
-                                        categoryId: String(cat.id),
+                                        categoryId: form.categoryId === String(cat.id) ? "" : String(cat.id),
                                     })
                                 }
                                 className={`
@@ -174,8 +199,7 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
                 <label className="text-xs text-[#A9ACB7]">
                     Descripción
                 </label>
-                <input
-                    type="text"
+                <textarea
                     placeholder="Ej: comida, uber, renta..."
                     value={form.description}
                     onChange={(e) =>
@@ -184,7 +208,17 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
                             description: e.target.value,
                         })
                     }
-                    className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896]"
+                    className="w-full min-h-25 resize-none rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896]"
+                />
+            </div>
+
+            <div className="space-y-1.5">
+                <label className="text-xs text-[#A9ACB7]">Fecha y hora</label>
+                <input
+                    type="datetime-local"
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                    className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896] text-white"
                 />
             </div>
 
@@ -200,7 +234,7 @@ export default function ExpenseForm({ expense, onSubmit, onClose }) {
 
                 <Button
                     type="submit"
-                    disabled={!form.amount || !form.categoryId}
+                    disabled={!form.amount}
                     className="flex-1 rounded-full bg-[#0f1115] text-[#07D896] border border-[#07D896]/40 hover:border-[#07D896] cursor-pointer"
                 >
                     {isEditing ? "Guardar" : "Crear"}

@@ -29,8 +29,8 @@ model Expense {
   amount      Float
   description String?
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

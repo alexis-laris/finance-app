@@ -1,28 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 import moment from "moment";
 const prisma = new PrismaClient();
+import "moment/locale/es.js";
 
+moment.locale("es");
 
 export const createExpense = async (req, res) => {
     try {
-        const { amount, categoryId, description } = req.body;
+        const { amount, categoryId, description, date } = req.body;
 
         const expense = await prisma.expense.create({
             data: {
                 amount,
                 description,
-
-                user: {
-                    connect: {
-                        id: req.user.id,
-                    },
-                },
-
-                category: {
-                    connect: {
-                        id: categoryId,
-                    },
-                },
+                ...(date && { createdAt: new Date(date) }), // sobreescribe el default
+                user: { connect: { id: req.user.id } },
+                ...(categoryId && { category: { connect: { id: categoryId } } }),
             },
         });
 
@@ -48,7 +41,7 @@ export const getExpenses = async (req, res) => {
 
         const formattedExpenses = expenses.map((exp) => ({
             ...exp,
-            createdAtFormatted: moment(exp.createdAt).format("DD MMM YYYY HH:mm"),
+            createdAtFormatted: moment(exp.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
         }));
 
         res.json(formattedExpenses);
@@ -63,7 +56,7 @@ export const getExpenses = async (req, res) => {
 export const updateExpense = async (req, res) => {
     try {
         const { id } = req.params;
-        const { amount, categoryId, description } = req.body;
+        const { amount, categoryId, description, date } = req.body;
 
 
         const existingExpense = await prisma.expense.findFirst({
@@ -82,11 +75,10 @@ export const updateExpense = async (req, res) => {
             data: {
                 amount,
                 description,
-                ...(categoryId && {
-                    category: {
-                        connect: { id: categoryId },
-                    },
-                }),
+                ...(date && { createdAt: new Date(date) }),
+                category: categoryId
+                    ? { connect: { id: categoryId } }
+                    : { disconnect: true },
             },
         });
 

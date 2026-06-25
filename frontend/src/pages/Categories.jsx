@@ -26,9 +26,6 @@ import {
 import CategoryForm, { resolveCategoryIcon } from "../components/CategoryForm";
 import Loader from "../components/utils/Loader";
 
-
-const DEFAULT_CATEGORY_DESCRIPTION = "Gastos asociados a esta categoría";
-
 export default function Categories() {
     const [open, setOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
@@ -213,7 +210,7 @@ export default function Categories() {
 
 
                                 <p className="text-sm text-gray-400 mt-3 leading-relaxed text-center">
-                                    {cat.description || DEFAULT_CATEGORY_DESCRIPTION}
+                                    {cat.description}
                                 </p>
 
 

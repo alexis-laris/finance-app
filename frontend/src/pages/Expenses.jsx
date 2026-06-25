@@ -1,6 +1,13 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Car, Home, ShoppingBag, Folder, UtensilsCrossed, HeartPulse } from "lucide-react";
+import {
+    Plus, Pencil, Trash2, Car, Home, ShoppingBag, Folder, UtensilsCrossed, HeartPulse, CreditCard, Gamepad2,
+    Wifi,
+    Smartphone,
+    PiggyBank,
+    Pipette,
+    Check
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -32,6 +39,11 @@ const categoryIcons = {
     shopping: ShoppingBag,
     utensils: UtensilsCrossed,
     health: HeartPulse,
+    creditcard: CreditCard,
+    gamepad2: Gamepad2,
+    wifi: Wifi,
+    smartphone: Smartphone,
+    piggybank: PiggyBank,
     default: Folder,
 };
 

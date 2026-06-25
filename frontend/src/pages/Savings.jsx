@@ -182,7 +182,7 @@ export default function Savings() {
                                 </h2>
 
 
-                                <p className="text-4xl font-bold tracking-tight text-white mt-3">
+                                <p className="text-4xl font-bold tracking-tight text-[#07D896] mt-3">
                                     {formatToMXN(goal.currentAmount)}
                                 </p>
                                 <p className="text-sm text-gray-400 mt-1">

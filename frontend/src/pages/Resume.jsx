@@ -216,7 +216,7 @@ export default function Resume() {
 
                     <h2 className="text-pink-300 font-bold flex items-center gap-2 mb-4">
                         <ShoppingCart size={16} />
-                        Próximos gastos
+                        Próximos pagos
                     </h2>
 
                     <div className="space-y-3">

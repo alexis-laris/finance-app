@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import moment from "moment";
 const prisma = new PrismaClient();
+import "moment/locale/es.js";
 
+moment.locale("es");
 
 export const createPayment = async (req, res) => {
     try {
@@ -24,7 +26,7 @@ export const createPayment = async (req, res) => {
                 type,
                 scheduledAt: new Date(scheduledAt),
                 userId,
-                categoryId,
+                categoryId: categoryId || null,
             },
         });
 
@@ -54,8 +56,10 @@ export const getPayments = async (req, res) => {
 
         const formattedPayments = payments.map((p) => ({
             ...p,
-            scheduledAtLabel: moment(p.scheduledAt).format("DD MMM YYYY"),
-
+            scheduledAtLabel: moment(p.scheduledAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+            paidAtLabel: p.paidAt
+                ? moment(p.paidAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
+                : null,
         }));
 
         res.json(formattedPayments);
@@ -126,7 +130,7 @@ export const updatePayment = async (req, res) => {
                 scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
                 category: categoryId
                     ? { connect: { id: categoryId } }
-                    : undefined,
+                    : { disconnect: true },
             },
         });
 
@@ -163,6 +167,7 @@ export const deletePayment = async (req, res) => {
 };
 
 
+
 export const togglePaymentStatus = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -186,7 +191,12 @@ export const togglePaymentStatus = async (req, res) => {
             },
         });
 
-        res.json(updated);
+        res.json({
+            ...updated,
+            paidAtLabel: updated.paidAt
+                ? moment(updated.paidAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
+                : null,
+        });
     } catch (error) {
         console.error("togglePaymentStatus error:", error);
         res.status(500).json({ message: "Error toggling payment status" });

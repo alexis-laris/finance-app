@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import moment from "moment";
+import "moment/locale/es.js";
 
+moment.locale("es");
 const prisma = new PrismaClient();
 
 
@@ -43,7 +45,7 @@ export const getSavingGoals = async (req, res) => {
         const formattedGoals = goals.map((goal) => ({
             ...goal,
             deadlineLabel: goal.deadline
-                ? moment(goal.deadline).format("DD MMM YYYY")
+                ? moment(goal.deadline).format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
         }));
 
@@ -96,11 +98,15 @@ export const getSavingGoalById = async (req, res) => {
 
         return res.json({
             ...goal,
+            contributions: goal.contributions.map((c) => ({
+                ...c,
+                createdAtLabel: moment(c.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+            })),
             deadlineLabel: goal.deadline
-                ? moment(goal.deadline).format("DD MMM YYYY")
+                ? moment(goal.deadline).format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
             createdAtLabel: goal.createdAt
-                ? moment(goal.createdAt).format("DD MMM YYYY")
+                ? moment(goal.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
             stats: {
                 totalSaved,
@@ -123,7 +129,7 @@ export const addContribution = async (req, res) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
-        const { amount, note } = req.body;
+        const { amount, note, date } = req.body;
 
         const goal = await prisma.savingGoal.findFirst({
             where: { id, userId },
@@ -138,6 +144,7 @@ export const addContribution = async (req, res) => {
                 data: {
                     amount: Number(amount),
                     note,
+                    ...(date && { createdAt: new Date(date) }),
                     savingGoalId: id,
                 },
             });
@@ -236,7 +243,7 @@ export const updateContribution = async (req, res) => {
     try {
         const userId = req.user.id;
         const { id, contributionId } = req.params;
-        const { amount, note } = req.body;
+        const { amount, note, date } = req.body;
 
 
         const goal = await prisma.savingGoal.findFirst({
@@ -261,7 +268,11 @@ export const updateContribution = async (req, res) => {
         const result = await prisma.$transaction(async (tx) => {
             const updated = await tx.savingGoalContribution.update({
                 where: { id: contributionId },
-                data: { amount: Number(amount), note },
+                data: {
+                    amount: Number(amount),
+                    note,
+                    ...(date && { createdAt: new Date(date) }),
+                },
             });
 
             const newTotal = goal.currentAmount + diff;

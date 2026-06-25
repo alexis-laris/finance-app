@@ -10,6 +10,13 @@ import {
     Folder,
     UtensilsCrossed,
     HeartPulse,
+    CreditCard,
+    Gamepad2,
+    Wifi,
+    Smartphone,
+    PiggyBank,
+    Pipette,
+    Check
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +50,11 @@ const categoryIcons = {
     shopping: ShoppingBag,
     utensils: UtensilsCrossed,
     health: HeartPulse,
+    creditcard: CreditCard,
+    gamepad2: Gamepad2,
+    wifi: Wifi,
+    smartphone: Smartphone,
+    piggybank: PiggyBank,
     default: Folder,
 };
 
@@ -320,6 +332,12 @@ export default function Payments() {
                                                 <p className="text-xs text-gray-500 mt-2">
                                                     Fecha programada: <span className="text-white font-bold">{p.scheduledAtLabel}</span>
                                                 </p>
+
+                                                {p.paidAt && (
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                        Pagado el: <span className="text-green-400 font-bold">{p.paidAtLabel}</span>
+                                                    </p>
+                                                )}
 
 
                                                 <div

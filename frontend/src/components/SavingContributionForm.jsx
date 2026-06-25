@@ -15,14 +15,23 @@ import {
 const DEFAULT_FORM = {
     amount: "",
     note: "",
+    date: "",
 };
 
 export default function SavingContributionForm({ contribution, onSubmit, onClose }) {
     const isEditing = Boolean(contribution);
 
+    const toLocalDatetimeString = (isoString) => {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        const offset = date.getTimezoneOffset() * 60000;
+        return new Date(date - offset).toISOString().slice(0, 16);
+    };
+
     const initialForm = useMemo(() => ({
         amount: contribution?.amount ?? "",
         note: contribution?.note ?? "",
+        date: toLocalDatetimeString(contribution?.createdAt),
     }), [contribution]);
 
     const [form, setForm] = useState(initialForm);
@@ -44,7 +53,11 @@ export default function SavingContributionForm({ contribution, onSubmit, onClose
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!form.amount) return;
-        onSubmit({ amount: Number(form.amount), note: form.note });
+        onSubmit({
+            amount: Number(form.amount),
+            note: form.note,
+            date: form.date ? new Date(form.date).toISOString() : undefined,
+        });
         if (!isEditing) reset();
     };
 
@@ -90,11 +103,20 @@ export default function SavingContributionForm({ contribution, onSubmit, onClose
 
                 <div className="mt-5 space-y-1.5">
                     <label className="text-xs text-[#A9ACB7]">Nota (opcional)</label>
-                    <input
-                        type="text"
+                    <textarea
                         placeholder="Ej. ahorro semanal"
                         value={form.note}
                         onChange={(e) => setForm({ ...form, note: e.target.value })}
+                        className="min-h-25 resize-none w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896]"
+                    />
+                </div>
+
+                <div className="mt-5 space-y-1.5">
+                    <label className="text-xs text-[#A9ACB7]">Fecha y hora</label>
+                    <input
+                        type="datetime-local"
+                        value={form.date}
+                        onChange={(e) => setForm({ ...form, date: e.target.value })}
                         className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896]"
                     />
                 </div>

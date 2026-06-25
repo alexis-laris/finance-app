@@ -1,5 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import moment from "moment";
+import "moment/locale/es.js";
+
+moment.locale("es");
+
 const prisma = new PrismaClient();
 
 export const createCategory = async (req, res) => {
@@ -40,7 +44,7 @@ export const getCategories = async (req, res) => {
 
         const formattedCategories = categories.map((cat) => ({
             ...cat,
-            createdAtFormatted: moment(cat.createdAt).format("DD MMM YYYY"),
+            createdAtFormatted: moment(cat.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
         }));
 
         res.json(formattedCategories);
@@ -152,7 +156,7 @@ export const getCategoryById = async (req, res) => {
         const formattedCategory = {
             ...category,
 
-            createdAtFormatted: moment(category.createdAt).format("DD MMM YYYY"),
+            createdAtFormatted: moment(category.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
 
             expensesCount: category.expenses.length,
             paymentsCount: category.payments.length,
@@ -160,9 +164,25 @@ export const getCategoryById = async (req, res) => {
             totalExpenses,
             totalPayments,
 
-            // 🔥 solo últimos 10 para no saturar el front
-            expenses: category.expenses.slice(0, 10),
-            payments: category.payments.slice(0, 10),
+            expenses: category.expenses.slice(0, 10).map((expense) => ({
+                ...expense,
+                createdAtFormatted: moment(expense.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+                amountFormatted: new Intl.NumberFormat("es-MX", {
+                    style: "currency",
+                    currency: "MXN",
+                }).format(expense.amount),
+            })),
+
+            payments: category.payments.slice(0, 10).map((payment) => ({
+                ...payment,
+                createdAtFormatted: moment(payment.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+                scheduledAtFormatted: moment(payment.scheduledAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+                paidAtFormatted: moment(payment.paidAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+                amountFormatted: new Intl.NumberFormat("es-MX", {
+                    style: "currency",
+                    currency: "MXN",
+                }).format(payment.amount),
+            })),
         };
 
         res.json(formattedCategory);

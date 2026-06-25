@@ -22,14 +22,19 @@ const DEFAULT_FORM = {
 export default function SavingGoalForm({ goal, onSubmit, onClose }) {
     const isEditing = Boolean(goal);
 
+    const toLocalDatetimeString = (isoString) => {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        const offset = date.getTimezoneOffset() * 60000;
+        return new Date(date - offset).toISOString().slice(0, 16);
+    };
+
     const initialForm = useMemo(() => {
         if (goal) {
             return {
                 name: goal.name ?? "",
                 targetAmount: goal.targetAmount ?? "",
-                deadline: goal.deadline
-                    ? goal.deadline.split("T")[0]
-                    : "",
+                deadline: toLocalDatetimeString(goal.deadline),
                 note: goal.note ?? "",
             };
         }
@@ -133,11 +138,9 @@ export default function SavingGoalForm({ goal, onSubmit, onClose }) {
                         Fecha límite
                     </label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         value={form.deadline}
-                        onChange={(e) =>
-                            setForm({ ...form, deadline: e.target.value })
-                        }
+                        onChange={(e) => setForm({ ...form, deadline: e.target.value })}
                         className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none transition-colors focus:border-[#07D896]"
                     />
                 </div>
@@ -153,7 +156,7 @@ export default function SavingGoalForm({ goal, onSubmit, onClose }) {
                         onChange={(e) =>
                             setForm({ ...form, note: e.target.value })
                         }
-                        className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none transition-colors focus:border-[#07D896]"
+                        className="w-full min-h-25 resize-none rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none transition-colors focus:border-[#07D896]"
                     />
                 </div>
 

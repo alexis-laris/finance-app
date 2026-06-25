@@ -251,7 +251,7 @@ export default function SavingGoalDetail() {
                                                 </p>
 
                                                 <p className="text-sm text-gray-400">
-                                                    Fecha: <span className="font-bold text-white">{goal.createdAtLabel}</span>
+                                                    Registrado: <span className="font-bold text-white">{c.createdAtLabel}</span>
                                                 </p>
                                             </div>
 

@@ -51,12 +51,12 @@ export const getDashboardResume = async (req, res) => {
         const categoryMap = {};
 
         expenses.forEach((e) => {
-            const key = e.categoryId;
+            const key = e.categoryId ?? "uncategorized";
 
             if (!categoryMap[key]) {
                 categoryMap[key] = {
                     categoryId: key,
-                    name: e.category.name,
+                    name: e.category?.name ?? "Sin categoría",
                     total: 0,
                 };
             }
@@ -73,9 +73,6 @@ export const getDashboardResume = async (req, res) => {
             where: {
                 userId,
                 status: "PENDING",
-                scheduledAt: {
-                    gte: now,
-                },
             },
             orderBy: {
                 scheduledAt: "asc",
@@ -98,8 +95,9 @@ export const getDashboardResume = async (req, res) => {
         const upcomingPaymentsFormatted = upcomingPayments.map((p) => ({
             ...p,
             scheduledAtLabel: p.scheduledAt
-                ? moment(p.scheduledAt).format("DD MMM YYYY")
+                ? moment(p.scheduledAt).format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
+            category: p.category ?? null,
         }));
 
 
@@ -124,7 +122,7 @@ export const getDashboardResume = async (req, res) => {
         const savingGoalsFormatted = savingGoals.map((g) => ({
             ...g,
             deadlineLabel: g.deadline
-                ? moment(g.deadline).format("DD MMM YYYY")
+                ? moment(g.deadline).format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
         }));
 

@@ -10,7 +10,14 @@ import {
     ShoppingBag,
     Folder,
     UtensilsCrossed,
-    HeartPulse
+    HeartPulse,
+    CreditCard,
+    Gamepad2,
+    Wifi,
+    Smartphone,
+    PiggyBank,
+    Pipette,
+    Check
 } from "lucide-react";
 
 const categoryIcons = {
@@ -19,6 +26,11 @@ const categoryIcons = {
     shopping: ShoppingBag,
     utensils: UtensilsCrossed,
     health: HeartPulse,
+    creditcard: CreditCard,
+    gamepad2: Gamepad2,
+    wifi: Wifi,
+    smartphone: Smartphone,
+    piggybank: PiggyBank,
     default: Folder,
 };
 
@@ -39,6 +51,13 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
         queryFn: getCategoriesRequest,
     });
 
+    const toLocalDatetimeString = (isoString) => {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        const offset = date.getTimezoneOffset() * 60000;
+        return new Date(date - offset).toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+    };
+
     const initialForm = useMemo(() => {
         if (payment) {
             return {
@@ -46,9 +65,7 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
                 amount: payment.amount ?? "",
                 description: payment.description ?? "",
                 categoryId: payment.category?.id?.toString() ?? "",
-                scheduledAt: payment.scheduledAt
-                    ? new Date(payment.scheduledAt).toISOString().split("T")[0]
-                    : "",
+                scheduledAt: toLocalDatetimeString(payment.scheduledAt),
                 type: payment.type ?? "EXPENSE",
             };
         }
@@ -68,34 +85,10 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
         setErrors({});
     };
 
-    const validateForm = () => {
-        const newErrors = {};
 
-        if (!form.name.trim()) {
-            newErrors.name = "El nombre es requerido";
-        }
-
-        if (!form.amount || Number(form.amount) <= 0) {
-            newErrors.amount = "El monto debe ser mayor a 0";
-        }
-
-        if (!form.scheduledAt) {
-            newErrors.scheduledAt = "La fecha es requerida";
-        }
-
-        if (!form.categoryId) {
-            newErrors.categoryId = "Selecciona una categoría";
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!validateForm()) return;
-
 
         const submitData = {
             name: form.name.trim(),
@@ -170,10 +163,10 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
             <div className="space-y-1.5">
                 <label className="text-xs text-[#A9ACB7]">Fecha programada</label>
                 <input
-                    type="date"
+                    type="datetime-local"
                     value={form.scheduledAt}
                     onChange={(e) => handleInputChange("scheduledAt", e.target.value)}
-                    className={`w-full rounded-lg border px-4 py-3 text-sm outline-none focus:border-[#07D896] bg-[#0B0F27] ${errors.scheduledAt ? "border-red-500" : "border-white/10"
+                    className={`w-full rounded-lg border px-4 py-3 text-sm outline-none focus:border-[#07D896] bg-[#0B0F27]  ${errors.scheduledAt ? "border-red-500" : "border-white/10"
                         }`}
                 />
                 {errors.scheduledAt && (
@@ -211,9 +204,7 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
 
             <div className="space-y-2">
                 <label className="text-xs text-[#A9ACB7]">Categoría</label>
-                {errors.categoryId && (
-                    <p className="text-xs text-red-400">{errors.categoryId}</p>
-                )}
+
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {categories.map((cat) => {
                         const Icon = categoryIcons[cat.icon] || categoryIcons.default;
@@ -223,7 +214,12 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
                             <button
                                 key={cat.id}
                                 type="button"
-                                onClick={() => handleInputChange("categoryId", String(cat.id))}
+                                onClick={() =>
+                                    handleInputChange(
+                                        "categoryId",
+                                        form.categoryId === String(cat.id) ? "" : String(cat.id)
+                                    )
+                                }
                                 className={`
                                     relative flex flex-col items-center justify-center gap-2
                                     rounded-xl p-3 border transition cursor-pointer
@@ -263,12 +259,11 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
 
             <div className="space-y-1.5">
                 <label className="text-xs text-[#A9ACB7]">Descripción</label>
-                <input
-                    type="text"
+                <textarea
                     placeholder="Ej: Pago de renta, suscripción..."
                     value={form.description}
                     onChange={(e) => handleInputChange("description", e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896]"
+                    className="min-h-25 resize-none w-full rounded-lg border border-white/10 bg-[#0B0F27] px-4 py-3 text-sm outline-none focus:border-[#07D896]"
                 />
             </div>
 
@@ -284,7 +279,7 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
 
                 <Button
                     type="submit"
-                    disabled={!form.name || !form.amount || !form.scheduledAt || !form.categoryId}
+                    disabled={!form.name || !form.amount || !form.scheduledAt}
                     className="flex-1 rounded-full bg-[#0f1115] text-[#07D896] border border-[#07D896]/40 hover:border-[#07D896] hover:bg-[#07D896]/10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isEditing ? "Guardar" : "Crear"}

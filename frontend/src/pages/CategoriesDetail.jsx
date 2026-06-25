@@ -1,11 +1,69 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryByIdRequest } from "../services/categories.service";
+import Loader from "../components/utils/Loader";
+import {
+    ArrowLeft,
+    Car,
+    Home,
+    ShoppingBag,
+    Folder,
+    UtensilsCrossed,
+    HeartPulse,
+    Clock,
+    CheckCircle2,
+    XCircle,
+    CreditCard,
+    Gamepad2,
+    Wifi,
+    Smartphone,
+    PiggyBank,
+    Pipette,
+    Check
+} from "lucide-react";
+import formatToMXN from "../lib/formatMXN";
+
+const categoryIcons = {
+    car: Car,
+    home: Home,
+    shopping: ShoppingBag,
+    utensils: UtensilsCrossed,
+    health: HeartPulse,
+    creditcard: CreditCard,
+    gamepad2: Gamepad2,
+    wifi: Wifi,
+    smartphone: Smartphone,
+    piggybank: PiggyBank,
+    default: Folder,
+};
+
+const paymentStatus = {
+    PENDING: {
+        label: "Pendiente",
+        icon: Clock,
+        color: "#f59e0b",
+        bg: "#f59e0b15",
+        border: "#f59e0b35",
+    },
+    PAID: {
+        label: "Pagado",
+        icon: CheckCircle2,
+        color: "#10b981",
+        bg: "#10b98115",
+        border: "#10b98135",
+    },
+    CANCELLED: {
+        label: "Cancelado",
+        icon: XCircle,
+        color: "#ef4444",
+        bg: "#ef444415",
+        border: "#ef444435",
+    },
+};
 
 export default function CategoriesDetail() {
     const { id } = useParams();
-
-    console.log("ID desde useParams:", id); // ← agrega esto
+    const navigate = useNavigate();
 
     const { data: category, isLoading, isError } = useQuery({
         queryKey: ["category", id],
@@ -13,88 +71,272 @@ export default function CategoriesDetail() {
         enabled: !!id,
     });
 
-    if (isLoading) return <p>Cargando...</p>;
+    if (isLoading) return <Loader />;
     if (isError || !category) return <p>Error cargando categoría</p>;
 
+    const color = category.color || "#07D896";
+    const IconComponent = categoryIcons[category.icon] || categoryIcons.default;
+
+    const colorBg = `${color}12`;
+    const colorBorder = `${color}40`;
+    const colorBorderHover = `${color}70`;
+
+    const hasExpenses = category.expenses?.length > 0;
+    const hasPayments = category.payments?.length > 0;
+
     return (
-        <div className="p-6 space-y-6">
+        <div className="space-y-4 pb-8">
 
-            {/* HEADER */}
-            <div>
-                <h1 className="text-2xl font-bold">{category.name}</h1>
+            <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition cursor-pointer"
+            >
+                <ArrowLeft size={15} />
+                Mis categorías
+            </button>
 
-                <p className="text-gray-400 mt-1">
-                    {category.description || "Sin descripción"}
-                </p>
 
-                <div className="mt-3">
-                    <span
-                        className="px-3 py-1 rounded-full text-sm"
-                        style={{
-                            backgroundColor: `${category.color || "#07D896"}20`,
-                            color: category.color || "#07D896",
-                        }}
+            <div
+                className="rounded-2xl p-6 relative overflow-hidden"
+                style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
+            >
+
+
+                <div className="relative z-10">
+                    <div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                        style={{ background: color }}
                     >
-                        {category.icon}
-                    </span>
-                </div>
-
-                <p className="text-xs text-gray-500 mt-3">
-                    Creada: {category.createdAtFormatted}
-                </p>
-            </div>
-
-            {/* RESUMEN */}
-            <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-white/5">
-                    <p className="text-sm text-gray-400">Total gastos</p>
-                    <p className="text-xl font-bold text-red-400">
-                        ${category.totalExpenses}
-                    </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white/5">
-                    <p className="text-sm text-gray-400">Gastos</p>
-                    <p className="text-xl font-bold">
-                        {category.expensesCount}
-                    </p>
-                </div>
-            </div>
-
-            {/* LISTA DE GASTOS */}
-            <div>
-                <h2 className="text-lg font-bold mb-3">
-                    Últimos gastos
-                </h2>
-
-                {category.expenses?.length === 0 ? (
-                    <p className="text-gray-500 text-sm">
-                        No hay gastos aún
-                    </p>
-                ) : (
-                    <div className="space-y-3">
-                        {category.expenses.map((exp) => (
-                            <div
-                                key={exp.id}
-                                className="flex justify-between items-center p-3 rounded-lg bg-white/5"
-                            >
-                                <div>
-                                    <p className="text-sm text-white">
-                                        {exp.description || "Sin descripción"}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        {new Date(exp.createdAt).toLocaleDateString()}
-                                    </p>
-                                </div>
-
-                                <p className="text-red-400 font-medium">
-                                    -${exp.amount}
-                                </p>
-                            </div>
-                        ))}
+                        <IconComponent size={26} color="#fff" />
                     </div>
-                )}
+
+                    <div className="mt-4">
+                        <h1 className="text-5xl font-bold text-white">
+                            {category.name}
+                        </h1>
+                        <p className="text-gray-400 mt-1 text-sm">
+                            {category.description || "Sin descripción"}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-3 flex items-center gap-1.5">
+                            Creada:{" "}
+                            <span className="text-white font-bold">
+                                {category.createdAtFormatted}
+                            </span>
+                        </p>
+                    </div>
+                </div>
             </div>
+
+
+            <div className="grid grid-cols-2 gap-3">
+                <div
+                    className="rounded-xl p-4"
+                    style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
+                >
+                    <p className="text-xs text-gray-400 mb-1">Total gastos</p>
+                    <p className="text-3xl font-bold text-white">
+                        {formatToMXN(category.totalExpenses)}
+                    </p>
+                    <p className="text-xs mt-1" style={{ color }}>
+                        {category.expensesCount}{" "}
+                        {category.expensesCount === 1 ? "registro" : "registros"}
+                    </p>
+                </div>
+
+                <div className="rounded-xl p-4 bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-400 mb-1">Total pagos</p>
+                    <p className="text-3xl font-bold text-white">
+                        {formatToMXN(category.totalPayments ?? 0)}
+                    </p>
+                    <p className="text-xs mt-1 text-gray-500">
+                        {category.paymentsCount ?? 0}{" "}
+                        {(category.paymentsCount ?? 0) === 1 ? "registro" : "registros"}
+                    </p>
+                </div>
+            </div>
+
+
+            <Section
+                title="Últimos gastos"
+                color={color}
+                empty={!hasExpenses}
+                emptyText="No hay gastos aún"
+            >
+                {category.expenses.map((exp) => (
+                    <ExpenseItem
+                        key={exp.id}
+                        exp={exp}
+                        color={color}
+                        colorBg={colorBg}
+                        colorBorder={colorBorder}
+                        colorBorderHover={colorBorderHover}
+                        IconComponent={IconComponent}
+                    />
+                ))}
+            </Section>
+
+
+            <Section
+                title="Pagos programados"
+                color={color}
+                empty={!hasPayments}
+                emptyText="No hay pagos programados"
+            >
+                {category.payments.map((pay) => (
+                    <PaymentItem
+                        key={pay.id}
+                        pay={pay}
+                        color={color}
+                        colorBg={colorBg}
+                        colorBorder={colorBorder}
+                        colorBorderHover={colorBorderHover}
+                        IconComponent={IconComponent}
+                    />
+                ))}
+            </Section>
+        </div>
+    );
+}
+
+
+function Section({ title, color, empty, emptyText, children }) {
+    return (
+        <div>
+            <div className="flex items-center gap-2 mb-3">
+                <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ background: color }}
+                />
+                <h2 className="text-sm font-semibold text-white">{title}</h2>
+            </div>
+
+            {empty ? (
+                <p className="text-sm text-gray-500 text-center py-6">
+                    {emptyText}
+                </p>
+            ) : (
+                <div className="space-y-2">{children}</div>
+            )}
+        </div>
+    );
+}
+
+
+
+function ExpenseItem({ exp, color, colorBg, colorBorder, colorBorderHover, IconComponent }) {
+    return (
+        <div
+            className="flex items-center justify-between p-3.5 rounded-xl transition-all"
+            style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "0.5px solid rgba(255,255,255,0.08)",
+            }}
+            onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = colorBorderHover)
+            }
+            onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")
+            }
+        >
+            <div className="flex items-center gap-3">
+                <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
+                >
+                    <IconComponent size={15} color={color} />
+                </div>
+                <div>
+                    <p className="text-sm text-white">
+                        {exp.description || "Sin descripción"}
+                    </p>
+
+
+                    <p className="text-xs text-gray-500 mt-0.5">
+                        Registrado: <span className="text-white font-bold">{exp.createdAtFormatted}</span>
+                    </p>
+                </div>
+            </div>
+
+            <p className="text-sm font-semibold" style={{ color }}>
+                -{formatToMXN(exp.amount)}
+            </p>
+        </div>
+    );
+}
+
+
+function PaymentItem({ pay, color, colorBg, colorBorder, colorBorderHover, IconComponent }) {
+    const status = paymentStatus[pay.status] ?? paymentStatus.PENDING;
+    const StatusIcon = status.icon;
+
+
+
+
+
+    return (
+        <div
+            className="flex items-center justify-between p-3.5 rounded-xl transition-all"
+            style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "0.5px solid rgba(255,255,255,0.08)",
+            }}
+            onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = colorBorderHover)
+            }
+            onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")
+            }
+        >
+            <div className="flex items-center gap-3">
+                <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
+                >
+                    <IconComponent size={15} color={color} />
+                </div>
+
+                <div>
+                    <p className="text-sm text-white">
+                        {pay.name || "Sin descripción"}
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+
+                        <span
+                            className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
+                            style={{
+                                background: status.bg,
+                                border: `1px solid ${status.border}`,
+                                color: status.color,
+                            }}
+                        >
+                            <StatusIcon size={10} />
+                            {status.label}
+                        </span>
+
+
+
+
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                            Fecha programada: <span className="text-white font-bold">{pay.scheduledAtFormatted || "-"}</span>
+                        </p>
+
+
+
+
+                        {pay.paidAt && (
+                            <p className="text-xs text-gray-500 mt-1">
+                                Pagado el: <span className="text-green-400 font-bold">{pay.paidAtFormatted || "-"}</span>
+                            </p>
+                        )}
+
+                    </div>
+                </div>
+            </div>
+
+            <p className="text-sm font-semibold shrink-0 ml-3" style={{ color }}>
+                -{formatToMXN(pay.amount)}
+            </p>
         </div>
     );
 }

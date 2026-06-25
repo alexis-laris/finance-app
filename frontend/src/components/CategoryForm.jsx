@@ -5,8 +5,13 @@ import {
     Home,
     ShoppingBag,
     HeartPulse,
+    CreditCard,
+    Gamepad2,
+    Wifi,
+    Smartphone,
+    PiggyBank,
     Pipette,
-    Check,
+    Check
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +33,11 @@ export const CATEGORY_ICONS = {
     home: { icon: Home, label: "Hogar" },
     shopping: { icon: ShoppingBag, label: "Compras" },
     health: { icon: HeartPulse, label: "Salud" },
+    creditcard: { icon: CreditCard, label: "Pagos" },
+    gamepad: { icon: Gamepad2, label: "Entretenimiento" },
+    wifi: { icon: Wifi, label: "Internet" },
+    smartphone: { icon: Smartphone, label: "Tecnología" },
+    piggyBank: { icon: PiggyBank, label: "Ahorro" },
 };
 
 const ICON_KEYS = Object.keys(CATEGORY_ICONS);
@@ -44,6 +54,12 @@ const COLOR_SWATCHES = [
     "#06b6d4",
     "#ec4899",
     "#64748b",
+    "#84cc16",
+    "#f97316",
+    "#14b8a6",
+    "#6366f1",
+    "#eab308",
+    "#0ea5e9",
 ];
 
 const DEFAULT_FORM = {
