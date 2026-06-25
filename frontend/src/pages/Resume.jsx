@@ -172,6 +172,10 @@ export default function Resume() {
                                     <span>{formatToMXN(goal.currentAmount)}</span>
                                     <span>{formatToMXN(goal.targetAmount)}</span>
                                 </div>
+
+                                <p className="text-xs text-gray-400">
+                                    Fecha límite: <span className="font-bold text-white">{goal.deadlineLabel}</span>
+                                </p>
                             </div>
                         );
                     })}
@@ -221,8 +225,10 @@ export default function Resume() {
                             >
                                 <p className="text-white">{exp.name}</p>
 
-                                <p className="text-xs text-gray-400">
-                                    {new Date(exp.scheduledAt).toLocaleDateString("es-MX")}
+
+
+                                <p className="text-sm text-gray-400">
+                                    Fecha límite: <span className="font-bold text-white">{exp.scheduledAtLabel}</span>
                                 </p>
 
                                 <p className="text-sm font-bold text-red-300">

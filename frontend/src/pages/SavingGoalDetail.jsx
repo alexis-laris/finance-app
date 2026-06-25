@@ -56,14 +56,7 @@ export default function SavingGoalDetail() {
 
     const stats = goal.stats;
     const progress = Math.min(stats.progress, 100);
-    const isCompleted = progress >= 100;
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return "";
-        return new Date(dateStr).toLocaleDateString("es-MX", {
-            day: "2-digit", month: "short", year: "numeric",
-        });
-    };
 
     return (
         <div className="space-y-5 text-white">
@@ -79,7 +72,9 @@ export default function SavingGoalDetail() {
 
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">{goal.name}</h1>
+                        <h2 className="text-xl font-bold text-gray-400">
+                            {goal.name} - <span className="font-bold text-white">Termina:  {goal.deadlineLabel}</span>
+                        </h2>
 
                     </div>
                     <Button
@@ -105,9 +100,7 @@ export default function SavingGoalDetail() {
                             Meta de ahorro
                         </p>
 
-                        <h2 className="text-xl font-bold">
-                            {goal.name}
-                        </h2>
+
 
                         <div className="mt-2">
                             <p className="text-4xl font-bold">
@@ -238,8 +231,8 @@ export default function SavingGoalDetail() {
                                                 {c.note || "Ahorro"}
                                             </p>
 
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {formatDate(c.createdAt)}
+                                            <p className="text-sm text-gray-400">
+                                                Fecha: <span className="font-bold text-white">{goal.createdAtLabel}</span>
                                             </p>
                                         </div>
 

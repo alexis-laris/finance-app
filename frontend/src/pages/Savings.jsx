@@ -196,11 +196,17 @@ export default function Savings() {
                             </div>
 
                             <p className="text-xs text-gray-500 mt-2">
-                                Finaliza: <span className="text-white font-bold">{goal.deadlineLabel}</span>
+                                Finaliza: <span className="text-white font-bold"> {goal.deadlineLabel}</span>
                             </p>
 
+                            <p className="text-xs text-gray-500 mt-2">
+                                Nota: {goal.note}
+                            </p>
 
                             <div className="flex justify-end mt-4">
+
+
+
                                 <Button
                                     onClick={() => goToDetail(goal)}
                                     className="

@@ -95,6 +95,13 @@ export const getDashboardResume = async (req, res) => {
             },
         });
 
+        const upcomingPaymentsFormatted = upcomingPayments.map((p) => ({
+            ...p,
+            scheduledAtLabel: p.scheduledAt
+                ? moment(p.scheduledAt).format("DD MMM YYYY")
+                : null,
+        }));
+
 
         const savingGoals = await prisma.savingGoal.findMany({
             where: {
@@ -114,15 +121,20 @@ export const getDashboardResume = async (req, res) => {
             },
         });
 
+        const savingGoalsFormatted = savingGoals.map((g) => ({
+            ...g,
+            deadlineLabel: g.deadline
+                ? moment(g.deadline).format("DD MMM YYYY")
+                : null,
+        }));
+
         return res.json({
             week: { total: weekTotal },
             month: { total: monthTotal },
             byCategory,
-            upcomingPayments,
-            savingGoals,
+            upcomingPayments: upcomingPaymentsFormatted,
+            savingGoals: savingGoalsFormatted,
         });
-
-
 
     } catch (error) {
         console.error(error);

@@ -73,16 +73,19 @@ export const getSavingGoalById = async (req, res) => {
             return res.status(404).json({ message: "Meta no encontrada" });
         }
 
-
         const totalSaved = goal.currentAmount;
         const remaining = Math.max(goal.targetAmount - totalSaved, 0);
 
         const now = new Date();
         const deadline = new Date(goal.deadline);
-        const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
 
+        const daysLeft = Math.ceil(
+            (deadline - now) / (1000 * 60 * 60 * 24)
+        );
 
-        const dailyNeeded = daysLeft > 0 && remaining > 0 ? remaining / daysLeft : 0;
+        const dailyNeeded =
+            daysLeft > 0 && remaining > 0 ? remaining / daysLeft : 0;
+
         const weeklyNeeded = dailyNeeded * 7;
         const monthlyNeeded = dailyNeeded * 30;
 
@@ -93,6 +96,12 @@ export const getSavingGoalById = async (req, res) => {
 
         return res.json({
             ...goal,
+            deadlineLabel: goal.deadline
+                ? moment(goal.deadline).format("DD MMM YYYY")
+                : null,
+            createdAtLabel: goal.createdAt
+                ? moment(goal.createdAt).format("DD MMM YYYY")
+                : null,
             stats: {
                 totalSaved,
                 remaining,
