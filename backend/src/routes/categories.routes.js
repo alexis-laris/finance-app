@@ -9,9 +9,7 @@ import {
 
 const router = express.Router();
 
-
 router.use(authMiddleware);
-
 
 router.post("/", createCategory);
 router.get("/", getCategories);

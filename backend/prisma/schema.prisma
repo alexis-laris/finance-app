@@ -17,10 +17,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  expenses   Expense[]
-  incomes    Income[]
-  categories Category[]
-  payments   Payment[]
+  expenses    Expense[]
+  incomes     Income[]
+  categories  Category[]
+  payments    Payment[]
+  savingGoals SavingGoal[]
 }
 
 model Expense {
@@ -32,9 +33,11 @@ model Expense {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Income {
@@ -42,9 +45,11 @@ model Income {
   amount Float
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Payment {
@@ -81,7 +86,7 @@ model Category {
   color String?
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   expenses Expense[]
   payments Payment[]
@@ -89,6 +94,47 @@ model Category {
   createdAt DateTime @default(now())
 
   @@unique([name, userId])
+  @@index([userId])
+}
+
+model SavingGoal {
+  id String @id @default(uuid())
+
+  name          String
+  targetAmount  Float
+  currentAmount Float  @default(0)
+
+  deadline DateTime
+  note     String?
+
+  status SavingGoalStatus @default(ACTIVE)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  contributions SavingGoalContribution[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([deadline])
+  @@index([status])
+  @@index([userId, status])
+}
+
+model SavingGoalContribution {
+  id String @id @default(uuid())
+
+  amount Float
+  note   String?
+
+  savingGoalId String
+  savingGoal   SavingGoal @relation(fields: [savingGoalId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([savingGoalId])
 }
 
 enum Role {
@@ -105,4 +151,10 @@ enum PaymentStatus {
 enum PaymentType {
   INCOME
   EXPENSE
+}
+
+enum SavingGoalStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
 }

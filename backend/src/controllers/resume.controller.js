@@ -7,10 +7,7 @@ export const getDashboardResume = async (req, res) => {
     try {
         const userId = req.user.id;
 
-
-
-
-        const startOfWeek = moment().startOf("isoWeek").toDate(); // lunes
+        const startOfWeek = moment().startOf("isoWeek").toDate();
         const startOfMonth = moment().startOf("month").toDate();
 
 
@@ -98,16 +95,34 @@ export const getDashboardResume = async (req, res) => {
             },
         });
 
-        return res.json({
-            week: {
-                total: weekTotal,
+
+        const savingGoals = await prisma.savingGoal.findMany({
+            where: {
+                userId,
+                status: { in: ["ACTIVE", "COMPLETED"] },
             },
-            month: {
-                total: monthTotal,
+            orderBy: {
+                deadline: "asc",
             },
-            byCategory,
-            upcomingPayments
+            select: {
+                id: true,
+                name: true,
+                targetAmount: true,
+                currentAmount: true,
+                deadline: true,
+                note: true,
+            },
         });
+
+        return res.json({
+            week: { total: weekTotal },
+            month: { total: monthTotal },
+            byCategory,
+            upcomingPayments,
+            savingGoals,
+        });
+
+
 
     } catch (error) {
         console.error(error);
@@ -116,3 +131,4 @@ export const getDashboardResume = async (req, res) => {
         });
     }
 };
+

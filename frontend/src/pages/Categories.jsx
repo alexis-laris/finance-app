@@ -98,7 +98,7 @@ export default function Categories() {
     };
 
     const goToCategoryDetail = (cat) => {
-        navigate(`/categorias/${cat.id}`);
+        navigate(`/categories/${cat.id}`);
     };
 
     return (
@@ -209,13 +209,13 @@ export default function Categories() {
                                 <Button
                                     onClick={() => goToCategoryDetail(cat)}
                                     className="
-                inline-flex items-center gap-1.5
-                rounded-full px-4 py-2 text-xs font-medium
-                bg-[#0f1115]
-                border
-                transition
-                cursor-pointer
-            "
+                                        inline-flex items-center gap-1.5
+                                        rounded-full px-4 py-2 text-xs font-medium
+                                        bg-[#0f1115]
+                                        border
+                                        transition
+                                        cursor-pointer
+                                    "
                                     style={{
                                         color: cat.color,
                                         borderColor: `${cat.color}66`,

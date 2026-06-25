@@ -108,7 +108,7 @@ export default function CategoryForm({ category, onSubmit, onClose }) {
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="font-Montserrat text-white bg-[#0B0F27]">
+            <form onSubmit={handleSubmit} className="font-Montserrat text-white bg-[#0B0F27] p-6">
                 <div className="flex flex-col items-center gap-4 pb-2 pt-1">
                     <div
                         className="flex h-20 w-20 items-center justify-center rounded-2xl border transition-colors"

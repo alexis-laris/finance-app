@@ -12,7 +12,7 @@ import {
     BarChart3,
 } from "lucide-react";
 
-/* ---------------- HELPERS ---------------- */
+
 function getNext15na() {
     const today = new Date();
     const day = today.getDate();
@@ -31,7 +31,7 @@ function formatDate(date) {
     });
 }
 
-/* ---------------- COMPONENT ---------------- */
+
 export default function Resume() {
     const { data, isLoading } = useQuery({
         queryKey: ["dashboard-resume"],
@@ -53,10 +53,11 @@ export default function Resume() {
         return <p className="text-cyan-300">Cargando resumen...</p>;
     }
 
+
     return (
         <div className="space-y-6 text-white">
 
-            {/* HEADER */}
+
             <div className="rounded-2xl p-5 border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115]">
                 <h1 className="text-2xl font-bold text-cyan-300">
                     Panel de Finanzas 👋
@@ -66,10 +67,10 @@ export default function Resume() {
                 </p>
             </div>
 
-            {/* 🔥 KPI IMPORTANTES (ESTO ES LO MÁS IMPORTANTE AHORA) */}
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                {/* SEMANA (ROJO / ALERTA) */}
+
                 <div className="p-5 rounded-2xl border border-red-500/20 bg-red-500/10  transition">
                     <p className="text-red-300 text-sm flex items-center gap-2">
                         <TrendingUp size={14} />
@@ -81,7 +82,7 @@ export default function Resume() {
                     </p>
                 </div>
 
-                {/* MES (VERDE PRINCIPAL) */}
+
                 <div className="p-5 rounded-2xl border border-green-500/20 bg-green-500/10  transition">
                     <p className="text-green-300 text-sm flex items-center gap-2">
                         <TrendingUp size={14} />
@@ -93,7 +94,7 @@ export default function Resume() {
                     </p>
                 </div>
 
-                {/* CATEGORÍAS (AZUL / INSIGHT) */}
+
                 <div className="p-5 rounded-2xl border border-blue-500/20 bg-blue-500/10  transition">
                     <p className="text-blue-300 text-sm flex items-center gap-2">
                         <BarChart3 size={14} />
@@ -107,10 +108,10 @@ export default function Resume() {
 
             </div>
 
-            {/* TOP INFO */}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-                {/* 15NA HERO */}
+
                 <div className="lg:col-span-2 relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-linear-to-br from-cyan-500/10 to-blue-500/5 p-6">
 
                     <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-cyan-500/20 blur-3xl" />
@@ -136,38 +137,52 @@ export default function Resume() {
                     </div>
                 </div>
 
-                {/* META */}
-                <div className="rounded-2xl border border-purple-500/20 bg-purple-500/10 p-6">
 
-                    <div className="text-purple-300 flex items-center gap-2 text-sm">
+
+                <div className="rounded-2xl border border-purple-500/20 bg-purple-500/10 p-6 space-y-4">
+                    <div className="text-purple-300 flex items-center gap-2 text-sm font-bold">
                         <Target size={16} />
-                        Meta principal
+                        Metas de ahorro
                     </div>
 
-                    <p className="text-lg font-bold mt-2">
-                        Ahorro mensual
-                    </p>
+                    {data?.savingGoals?.length === 0 && (
+                        <p className="text-xs text-gray-500">Sin metas activas</p>
+                    )}
 
-                    <div className="mt-4">
-                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-linear-to-r from-purple-400 to-pink-500"
-                                style={{ width: "65%" }}
-                            />
-                        </div>
+                    {data?.savingGoals?.map((goal) => {
+                        const pct = Math.min(
+                            100,
+                            Math.round((goal.currentAmount / goal.targetAmount) * 100)
+                        );
+                        return (
+                            <div key={goal.id}>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-white font-medium">{goal.name}</span>
+                                    <span className="text-purple-300">{pct}%</span>
+                                </div>
 
-                        <p className="text-xs text-purple-300 mt-2">
-                            65% completado
-                        </p>
-                    </div>
+                                <div className="mt-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-linear-to-r from-purple-400 to-pink-500 transition-all"
+                                        style={{ width: `${pct}%` }}
+                                    />
+                                </div>
+
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>{formatToMXN(goal.currentAmount)}</span>
+                                    <span>{formatToMXN(goal.targetAmount)}</span>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
 
             </div>
 
-            {/* MAIN GRID */}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-                {/* CATEGORÍAS */}
+
                 <div className="rounded-2xl border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115] p-5">
                     <h2 className="text-cyan-300 font-bold mb-4">
                         Gastos por categoría
@@ -190,7 +205,7 @@ export default function Resume() {
                     </div>
                 </div>
 
-                {/* PRÓXIMOS GASTOS */}
+
                 <div className="rounded-2xl border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115] p-5">
 
                     <h2 className="text-pink-300 font-bold flex items-center gap-2 mb-4">
@@ -218,7 +233,7 @@ export default function Resume() {
                     </div>
                 </div>
 
-                {/* GRÁFICA */}
+
                 <div className="rounded-2xl border border-white/10 bg-linear-to-br from-purple-500/10 to-pink-500/5 flex items-center justify-center p-5">
                     <div className="text-center text-purple-300">
                         <BarChart3 className="mx-auto mb-2" />

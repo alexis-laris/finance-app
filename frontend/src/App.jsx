@@ -11,9 +11,11 @@ import DashboardLayout from "./components/layouts/DashboardLayout.jsx";
 
 import Resume from "./pages/Resume";
 import Categories from "./pages/Categories";
+import CategoriesDetail from "./pages/CategoriesDetail";
 import Expenses from "./pages/Expenses";
 import Payments from "./pages/Payments";
-import Goals from "./pages/Goals";
+import Savings from "./pages/Savings";
+import SavingGoalDetail from "./pages/SavingGoalDetail";
 
 export default function App() {
   return (
@@ -37,9 +39,11 @@ export default function App() {
         >
           <Route index element={<Resume />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="categories/:id" element={<CategoriesDetail />} />
           <Route path="expenses" element={<Expenses />} />
           <Route path="payments" element={<Payments />} />
-          <Route path="goals" element={<Goals />} />
+          <Route path="savings" element={<Savings />} />
+          <Route path="savings/:id" element={<SavingGoalDetail />} />
         </Route>
 
       </Routes>

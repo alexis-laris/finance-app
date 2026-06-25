@@ -234,20 +234,29 @@ export default function Payments() {
                                             />
 
 
-                                            <div className="absolute right-3 top-3 flex gap-1 opacity-0 group-hover:opacity-100">
-                                                <Button
+                                            <div className="absolute right-3 top-3 flex items-center gap-2 opacity-0 group-hover:opacity-100">
+
+                                                <button
                                                     onClick={() => toggleMutation.mutate(p.id)}
-                                                    className={`cursor-pointer rounded-md p-1.5 h-auto w-auto ${isPaid
-                                                        ? "bg-green-600"
-                                                        : "bg-black/40"
-                                                        }`}
+                                                    className="cursor-pointer flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium border transition-all"
+                                                    style={{
+                                                        backgroundColor: isPaid ? "rgba(34,197,94,0.15)" : "rgba(0,0,0,0.4)",
+                                                        borderColor: isPaid ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)",
+                                                        color: isPaid ? "#4ade80" : "#9ca3af",
+                                                    }}
                                                 >
-                                                    {isPaid ? (
-                                                        <CheckCircle2 size={14} />
-                                                    ) : (
-                                                        <Clock size={14} />
-                                                    )}
-                                                </Button>
+
+                                                    <span
+                                                        className="relative inline-flex h-4 w-7 shrink-0 rounded-full transition-colors duration-200"
+                                                        style={{ backgroundColor: isPaid ? "#16a34a" : "#374151" }}
+                                                    >
+                                                        <span
+                                                            className="inline-block h-3 w-3 rounded-full bg-white shadow transform transition-transform duration-200 absolute top-0.5"
+                                                            style={{ left: isPaid ? "14px" : "2px" }}
+                                                        />
+                                                    </span>
+                                                    {isPaid ? "Pagado" : "Pendiente"}
+                                                </button>
 
                                                 <Button
                                                     onClick={() => openEditModal(p)}

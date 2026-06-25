@@ -10,9 +10,7 @@ import {
 
 const router = express.Router();
 
-
 router.use(authMiddleware);
-
 
 router.post("/", createExpense);
 router.get("/", getExpenses);

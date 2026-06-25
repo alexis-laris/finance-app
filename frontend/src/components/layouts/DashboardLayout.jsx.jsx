@@ -35,7 +35,7 @@ export default function DashboardLayout() {
     { name: "Mis Gastos", icon: DollarSign, path: "/dashboard/expenses" },
     { name: "Pagos Futuros", icon: CheckCheck, path: "/dashboard/payments" },
     { name: "Categorías", icon: Folder, path: "/dashboard/categories" },
-    { name: "Mis Metas", icon: Target, path: "/dashboard/goals" },
+    { name: "Mis Metas", icon: Target, path: "/dashboard/savings" },
   ];
 
   return (
