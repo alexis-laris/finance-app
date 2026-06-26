@@ -16,6 +16,7 @@ import Expenses from "./pages/Expenses";
 import Payments from "./pages/Payments";
 import Savings from "./pages/Savings";
 import SavingGoalDetail from "./pages/SavingGoalDetail";
+import Calendar from "./pages/Calendar";
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="payments" element={<Payments />} />
           <Route path="savings" element={<Savings />} />
           <Route path="savings/:id" element={<SavingGoalDetail />} />
+          <Route path="calendar" element={<Calendar />} />
         </Route>
 
       </Routes>

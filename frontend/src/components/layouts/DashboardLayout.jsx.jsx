@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   LogOut,
-  CheckCheck
+  CheckCheck,
+  Calendar
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -32,6 +33,7 @@ export default function DashboardLayout() {
 
   const menu = [
     { name: "Inicio", icon: Home, path: "/dashboard", end: true },
+    { name: "Calendario", icon: Calendar, path: "/dashboard/calendar" },
     { name: "Mis Gastos", icon: DollarSign, path: "/dashboard/expenses" },
     { name: "Pagos Futuros", icon: CheckCheck, path: "/dashboard/payments" },
     { name: "Categorías", icon: Folder, path: "/dashboard/categories" },
