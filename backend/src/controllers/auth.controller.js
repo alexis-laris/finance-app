@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -75,8 +77,8 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -128,8 +130,8 @@ export const me = async (req, res) => {
 export const logout = async (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        sameSite: "lax",
-        secure: false
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
     });
 
     return res.json({ message: "Logged out" });
