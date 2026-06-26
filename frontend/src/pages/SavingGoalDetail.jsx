@@ -89,16 +89,19 @@ export default function SavingGoalDetail() {
                         Mis metas
                     </button>
 
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div>
                             <h2 className="text-xl font-bold text-gray-400">
-                                {goal.name} - <span className="font-bold text-white">Termina:  {goal.deadlineLabel}</span>
+                                {goal.name} -{" "}
+                                <span className="font-bold text-white">
+                                    Termina: {goal.deadlineLabel}
+                                </span>
                             </h2>
-
                         </div>
+
                         <Button
                             onClick={() => setOpen(true)}
-                            className="flex items-center gap-2 shrink-0 rounded-full px-4 py-4 text-sm bg-[#0f1115] text-[#07D896] border border-[#07D896]/40 hover:border-[#07D896] cursor-pointer"
+                            className="flex items-center justify-center gap-2 shrink-0 rounded-full px-4 py-4 text-sm bg-[#0f1115] text-[#07D896] border border-[#07D896]/40 hover:border-[#07D896] cursor-pointer w-full sm:w-auto!"
                         >
                             <Plus size={16} />
                             Agregar dinero
@@ -304,7 +307,16 @@ export default function SavingGoalDetail() {
                     open={Boolean(editingContribution)}
                     onOpenChange={(v) => !v && setEditingContribution(null)}
                 >
-                    <DialogContent>
+                    <DialogContent
+                        className="
+            w-[95vw]
+            sm:max-w-lg
+            lg:max-w-xl
+            max-h-[90vh]
+            overflow-y-auto
+            p-0
+        "
+                    >
                         <SavingContributionForm
                             key={editingContribution?.id}
                             contribution={editingContribution}

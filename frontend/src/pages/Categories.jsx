@@ -259,7 +259,16 @@ export default function Categories() {
                 </div>
 
                 <Dialog open={open} onOpenChange={(v) => !v && handleCloseModal()}>
-                    <DialogContent>
+                    <DialogContent
+                        className="
+            w-[95vw]
+            sm:max-w-lg
+            lg:max-w-xl
+            max-h-[90vh]
+            overflow-y-auto
+            p-0
+        "
+                    >
                         <CategoryForm
                             category={editingCategory}
                             onSubmit={handleSubmit}

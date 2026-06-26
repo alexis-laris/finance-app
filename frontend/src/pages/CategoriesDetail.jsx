@@ -18,8 +18,6 @@ import {
     Wifi,
     Smartphone,
     PiggyBank,
-    Pipette,
-    Check
 } from "lucide-react";
 import formatToMXN from "../lib/formatMXN";
 
@@ -100,24 +98,27 @@ export default function CategoriesDetail() {
                 className="rounded-2xl p-6 relative overflow-hidden"
                 style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
             >
+                <div className="relative z-10 flex flex-col items-center sm:items-start text-center sm:text-left">
 
 
-                <div className="relative z-10">
                     <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 mx-auto sm:mx-0"
                         style={{ background: color }}
                     >
                         <IconComponent size={26} color="#fff" />
                     </div>
 
-                    <div className="mt-4">
-                        <h1 className="text-5xl font-bold text-white">
+
+                    <div className="mt-4 w-full">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white wrap-break-word">
                             {category.name}
                         </h1>
+
                         <p className="text-gray-400 mt-1 text-sm">
                             {category.description || "Sin descripción"}
                         </p>
-                        <p className="text-xs text-gray-500 mt-3 flex items-center gap-1.5">
+
+                        <p className="text-xs text-gray-500 mt-3 flex items-center gap-1.5 justify-center sm:justify-start">
                             Creada:{" "}
                             <span className="text-white font-bold">
                                 {category.createdAtFormatted}
@@ -128,27 +129,38 @@ export default function CategoriesDetail() {
             </div>
 
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div
                     className="rounded-xl p-4"
                     style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
                 >
-                    <p className="text-xs text-gray-400 mb-1">Total gastos</p>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-xs text-gray-400 mb-1 text-center sm:text-left">
+                        Total gastos
+                    </p>
+
+                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white text-center sm:text-left">
                         {formatToMXN(category.totalExpenses)}
                     </p>
-                    <p className="text-xs mt-1" style={{ color }}>
+
+                    <p
+                        className="text-xs mt-1 text-center sm:text-left"
+                        style={{ color }}
+                    >
                         {category.expensesCount}{" "}
                         {category.expensesCount === 1 ? "registro" : "registros"}
                     </p>
                 </div>
 
                 <div className="rounded-xl p-4 bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-400 mb-1">Total pagos</p>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-xs text-gray-400 mb-1 text-center sm:text-left">
+                        Total pagos
+                    </p>
+
+                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white text-center sm:text-left">
                         {formatToMXN(category.totalPayments ?? 0)}
                     </p>
-                    <p className="text-xs mt-1 text-gray-500">
+
+                    <p className="text-xs mt-1 text-gray-500 text-center sm:text-left">
                         {category.paymentsCount ?? 0}{" "}
                         {(category.paymentsCount ?? 0) === 1 ? "registro" : "registros"}
                     </p>
@@ -265,13 +277,16 @@ function ExpenseItem({ exp, color, colorBg, colorBorder, colorBorderHover, IconC
 }
 
 
-function PaymentItem({ pay, color, colorBg, colorBorder, colorBorderHover, IconComponent }) {
+function PaymentItem({
+    pay,
+    color,
+    colorBg,
+    colorBorder,
+    colorBorderHover,
+    IconComponent,
+}) {
     const status = paymentStatus[pay.status] ?? paymentStatus.PENDING;
     const StatusIcon = status.icon;
-
-
-
-
 
     return (
         <div
@@ -287,7 +302,8 @@ function PaymentItem({ pay, color, colorBg, colorBorder, colorBorderHover, IconC
                 (e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)")
             }
         >
-            <div className="flex items-center gap-3">
+            {/* LEFT */}
+            <div className="flex items-start gap-3 min-w-0">
                 <div
                     className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: colorBg, border: `1px solid ${colorBorder}` }}
@@ -295,15 +311,17 @@ function PaymentItem({ pay, color, colorBg, colorBorder, colorBorderHover, IconC
                     <IconComponent size={15} color={color} />
                 </div>
 
-                <div>
-                    <p className="text-sm text-white">
+                <div className="min-w-0">
+                    <p className="text-sm text-white truncate">
                         {pay.name || "Sin descripción"}
                     </p>
 
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    {/* INFO BLOCK */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
 
+                        {/* STATUS */}
                         <span
-                            className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
+                            className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full w-fit"
                             style={{
                                 background: status.bg,
                                 border: `1px solid ${status.border}`,
@@ -314,26 +332,28 @@ function PaymentItem({ pay, color, colorBg, colorBorder, colorBorderHover, IconC
                             {status.label}
                         </span>
 
-
-
-
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                            Fecha programada: <span className="text-white font-bold">{pay.scheduledAtFormatted || "-"}</span>
+                        {/* FECHA PROGRAMADA */}
+                        <p className="text-xs text-gray-500">
+                            Fecha programada:{" "}
+                            <span className="text-white font-bold">
+                                {pay.scheduledAtFormatted || "-"}
+                            </span>
                         </p>
 
-
-
-
+                        {/* FECHA PAGADO */}
                         {pay.paidAt && (
-                            <p className="text-xs text-gray-500 mt-1">
-                                Pagado el: <span className="text-green-400 font-bold">{pay.paidAtFormatted || "-"}</span>
+                            <p className="text-xs text-gray-500">
+                                Pagado el:{" "}
+                                <span className="text-green-400 font-bold">
+                                    {pay.paidAtFormatted || "-"}
+                                </span>
                             </p>
                         )}
-
                     </div>
                 </div>
             </div>
 
+            {/* AMOUNT */}
             <p className="text-sm font-semibold shrink-0 ml-3" style={{ color }}>
                 -{formatToMXN(pay.amount)}
             </p>
