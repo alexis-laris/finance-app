@@ -26,7 +26,7 @@ export default function DashboardLayout() {
   const logoutMutation = useMutation({
     mutationFn: logoutRequest,
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.setQueryData(["me"], null);
       navigate("/");
     },
   });
