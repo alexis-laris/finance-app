@@ -19,20 +19,20 @@ const isMobile = () => window.innerWidth < 768;
 
 export default function DashboardLayout() {
   const { data: user } = useAuth();
-  const [open, setOpen] = useState(() => !isMobile()); // 👈 cerrado en móvil por defecto
+  const [open, setOpen] = useState(() => !isMobile());
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 👈 cierra el sidebar al navegar en móvil
+
   useEffect(() => {
     if (isMobile()) {
       setOpen(false);
     }
   }, [location.pathname]);
 
-  // 👈 ajusta el estado inicial si cambia el tamaño de ventana
+
   useEffect(() => {
     const handleResize = () => {
       if (!isMobile()) setOpen(true);
@@ -66,7 +66,7 @@ export default function DashboardLayout() {
         className={`bg-white/5 border-r border-white/10 flex flex-col h-screen sticky top-0 transition-all duration-300
         ${open ? "w-64" : "w-16"}`}
       >
-        {/* Nav arriba */}
+
         <div className="flex flex-col flex-1 overflow-y-auto p-3">
           <div className="flex items-center justify-between mb-8 h-10">
             {open && (
@@ -101,7 +101,7 @@ export default function DashboardLayout() {
           </nav>
         </div>
 
-        {/* Logout siempre abajo 👇 */}
+
         <div className="p-3 border-t border-white/10 mt-auto">
           <button
             onClick={() => logoutMutation.mutate()}

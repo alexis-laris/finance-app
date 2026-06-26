@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginRequest } from "../services/auth.service";
-import Loader from "../components/utils/Loader";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -37,7 +36,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-[#0B0F27] text-white font-Montserrat">
-            {mutation.isPending && <Loader />} {/* 👈 aquí */}
+
 
             <div className="flex items-center justify-center px-10 py-20">
                 <form

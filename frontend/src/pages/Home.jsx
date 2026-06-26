@@ -7,29 +7,6 @@ export default function Home() {
         <div className="min-h-screen bg-[#0B0F27] text-white font-Montserrat">
 
 
-            <nav className="flex items-center justify-between px-10 py-5 border-b border-white/10">
-                <div className="flex items-center gap-2 text-[#07D896] font-bold text-xl">
-                    Alexis Laris
-                </div>
-
-                <div className="flex gap-3">
-                    <button
-                        onClick={() => navigate("/login")}
-                        className="px-4 py-2 text-sm text-[#FFFF] border border-gray-400 rounded-full hover:bg-gray-800 transition cursor-pointer"
-                    >
-                        Iniciar sesión
-                    </button>
-
-                    <button
-                        onClick={() => navigate("/register")}
-                        className="px-4 py-2 text-sm bg-[#07D896] text-gray-900 rounded-full hover:opacity-90 transition cursor-pointer"
-                    >
-                        Crear cuenta
-                    </button>
-                </div>
-            </nav>
-
-
             <section className="flex flex-col items-center text-center px-10 py-24">
                 <h1 className="text-4xl md:text-5xl font-medium tracking-tight leading-tight mb-4">
                     Tus finanzas,{" "}

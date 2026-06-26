@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 
 import DashboardLayout from "./components/layouts/DashboardLayout.jsx";
+import PublicLayout from "./components/layouts/PublicLayout";
 
 import Resume from "./pages/Resume";
 import Categories from "./pages/Categories";
@@ -24,10 +25,12 @@ export default function App() {
       <Routes>
 
 
-        <Route path="/" element={<Home />} />
 
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        </Route>
 
 
         <Route
