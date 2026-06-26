@@ -307,18 +307,18 @@ export default function Expenses() {
 
 
 
-                                                <div className="flex justify-between mt-5">
+                                                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mt-5">
 
-                                                    <p className="text-sm text-gray-400 mt-3 leading-relaxed">
+                                                    <p className="text-sm text-gray-400 leading-relaxed">
                                                         {exp.description || "Sin descripción"}
                                                     </p>
 
-                                                    <p className="text-xs text-gray-500 mt-2">
-                                                        Registrado: <span className="text-white font-bold">{exp.createdAtFormatted}</span>
+                                                    <p className="text-xs text-gray-500 shrink-0">
+                                                        Registrado:{" "}
+                                                        <span className="text-white font-bold">
+                                                            {exp.createdAtFormatted}
+                                                        </span>
                                                     </p>
-
-
-
 
                                                 </div>
 

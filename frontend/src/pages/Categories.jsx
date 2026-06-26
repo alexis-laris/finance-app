@@ -216,23 +216,27 @@ export default function Categories() {
 
 
 
-                                <div className="flex justify-between mt-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5">
 
-                                    <p className="text-xs text-gray-500 mt-2">
-                                        Creada: <span className="text-white font-bold">{cat.createdAtFormatted}</span>
+                                    <p className="text-xs text-gray-500">
+                                        Creada:{" "}
+                                        <span className="text-white font-bold">
+                                            {cat.createdAtFormatted}
+                                        </span>
                                     </p>
 
                                     <Button
                                         onClick={() => goToCategoryDetail(cat)}
                                         className="
-                                        inline-flex items-center gap-1.5
-                                        rounded-full px-4 py-2 text-xs font-medium
-                                        bg-[#0f1115]
-                                        border
-                                        transition-all duration-200
-                                        hover:brightness-125
-                                        cursor-pointer
-                                    "
+            self-end sm:self-auto
+            inline-flex items-center gap-1.5
+            rounded-full px-4 py-2 text-xs font-medium
+            bg-[#0f1115]
+            border
+            transition-all duration-200
+            hover:brightness-125
+            cursor-pointer
+        "
                                         style={{
                                             color: cat.color,
                                             borderColor: `${cat.color}66`,
@@ -241,6 +245,7 @@ export default function Categories() {
                                         Ver categoría
                                         <ArrowUpRight size={14} />
                                     </Button>
+
                                 </div>
 
 

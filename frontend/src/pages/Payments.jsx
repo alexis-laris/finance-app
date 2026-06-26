@@ -260,27 +260,7 @@ export default function Payments() {
 
                                                 <div className="absolute right-3 flex items-center gap-2 opacity-100">
 
-                                                    <button
-                                                        onClick={() => toggleMutation.mutate(p.id)}
-                                                        className="cursor-pointer flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium border transition-all"
-                                                        style={{
-                                                            backgroundColor: isPaid ? "rgba(34,197,94,0.15)" : "rgba(0,0,0,0.4)",
-                                                            borderColor: isPaid ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)",
-                                                            color: isPaid ? "#4ade80" : "#9ca3af",
-                                                        }}
-                                                    >
 
-                                                        <span
-                                                            className="relative inline-flex h-4 w-7 shrink-0 rounded-full transition-colors duration-200"
-                                                            style={{ backgroundColor: isPaid ? "#16a34a" : "#374151" }}
-                                                        >
-                                                            <span
-                                                                className="inline-block h-3 w-3 rounded-full bg-white shadow transform transition-transform duration-200 absolute top-0.5"
-                                                                style={{ left: isPaid ? "14px" : "2px" }}
-                                                            />
-                                                        </span>
-                                                        {isPaid ? "Pagado" : "Pendiente"}
-                                                    </button>
 
                                                     <Button
                                                         onClick={() => openEditModal(p)}
@@ -298,9 +278,9 @@ export default function Payments() {
                                                 </div>
 
 
-                                                <div className="flex items-center gap-2 mb-4">
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                                                     <span
-                                                        className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border"
+                                                        className=" w-fit flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border"
                                                         style={{
                                                             backgroundColor: `${category?.color || "#07D896"}20`,
                                                             color: category?.color || "#07D896",
@@ -310,16 +290,36 @@ export default function Payments() {
                                                         <Icon size={14} />
                                                         {category?.name || "Sin categoría"}
                                                     </span>
-
-                                                    <span
-                                                        className={`text-xs px-2 py-1 rounded-full ${isPaid
-                                                            ? "bg-green-500/20 text-green-400"
-                                                            : "bg-yellow-500/20 text-yellow-400"
-                                                            }`}
+                                                    <button
+                                                        onClick={() => toggleMutation.mutate(p.id)}
+                                                        className="cursor-pointer w-fit flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium border transition-all"
+                                                        style={{
+                                                            backgroundColor: isPaid
+                                                                ? "rgba(34,197,94,0.15)"
+                                                                : "rgba(234,179,8,0.15)",
+                                                            borderColor: isPaid
+                                                                ? "rgba(34,197,94,0.4)"
+                                                                : "rgba(234,179,8,0.4)",
+                                                            color: isPaid ? "#4ade80" : "#facc15",
+                                                        }}
                                                     >
+                                                        <span
+                                                            className="relative inline-flex h-4 w-7 shrink-0 rounded-full transition-colors duration-200"
+                                                            style={{ backgroundColor: isPaid ? "#16a34a" : "#eab308" }}
+                                                        >
+                                                            <span
+                                                                className="absolute top-0.5 inline-block h-3 w-3 rounded-full bg-white shadow transition-transform duration-200"
+                                                                style={{ left: isPaid ? "14px" : "2px" }}
+                                                            />
+                                                        </span>
+
                                                         {isPaid ? "Pagado" : "Pendiente"}
-                                                    </span>
+                                                    </button>
+
                                                 </div>
+
+
+
 
                                                 <h2 className="text-3xl font-bold text-white">
                                                     {formatToMXN(p.amount)}
@@ -328,6 +328,8 @@ export default function Payments() {
                                                 <p className="text-sm text-gray-400 mt-3">
                                                     {p.name}
                                                 </p>
+
+
 
                                                 <p className="text-xs text-gray-500 mt-2">
                                                     Fecha programada: <span className="text-white font-bold">{p.scheduledAtLabel}</span>
