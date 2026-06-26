@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutRequest } from "../../services/auth.service";
-import { useNavigate, Outlet } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { useNavigate, Outlet, useLocation, NavLink } from "react-router-dom";
 import {
   Home,
   DollarSign,
@@ -16,12 +15,32 @@ import {
   Calendar
 } from "lucide-react";
 
+const isMobile = () => window.innerWidth < 768;
+
 export default function DashboardLayout() {
   const { data: user } = useAuth();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => !isMobile()); // 👈 cerrado en móvil por defecto
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 👈 cierra el sidebar al navegar en móvil
+  useEffect(() => {
+    if (isMobile()) {
+      setOpen(false);
+    }
+  }, [location.pathname]);
+
+  // 👈 ajusta el estado inicial si cambia el tamaño de ventana
+  useEffect(() => {
+    const handleResize = () => {
+      if (!isMobile()) setOpen(true);
+      else setOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const logoutMutation = useMutation({
     mutationFn: logoutRequest,
@@ -45,17 +64,14 @@ export default function DashboardLayout() {
 
       <aside
         className={`bg-white/5 border-r border-white/10 flex flex-col h-screen sticky top-0 transition-all duration-300
-        ${open ? "w-64" : "w-20"}`}
+        ${open ? "w-64" : "w-16"}`}
       >
-
-        <div className="flex flex-col flex-1 overflow-y-auto p-4">
+        {/* Nav arriba */}
+        <div className="flex flex-col flex-1 overflow-y-auto p-3">
           <div className="flex items-center justify-between mb-8 h-10">
             {open && (
-              <h2 className="text-[#07D896] font-bold text-lg">
-                Finance App
-              </h2>
+              <h2 className="text-[#07D896] font-bold text-lg">Finance App</h2>
             )}
-
             <button
               onClick={() => setOpen(!open)}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer"
@@ -67,7 +83,6 @@ export default function DashboardLayout() {
           <nav className="space-y-2">
             {menu.map((item, i) => {
               const Icon = item.icon;
-
               return (
                 <NavLink
                   key={i}
@@ -75,10 +90,10 @@ export default function DashboardLayout() {
                   end={item.end}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-    ${isActive ? "bg-white/10 text-[#07D896]" : "hover:bg-white/10"}`
+                    ${isActive ? "bg-white/10 text-[#07D896]" : "hover:bg-white/10"}`
                   }
                 >
-                  <Icon size={18} />
+                  <Icon size={18} className="shrink-0" />
                   {open && <span>{item.name}</span>}
                 </NavLink>
               );
@@ -86,19 +101,17 @@ export default function DashboardLayout() {
           </nav>
         </div>
 
-
-        <div className="p-4 border-t border-white/10">
+        {/* Logout siempre abajo 👇 */}
+        <div className="p-3 border-t border-white/10 mt-auto">
           <button
             onClick={() => logoutMutation.mutate()}
-            className={`w-full py-3 text-sm bg-[#07D896] text-gray-900 rounded-full cursor-pointer flex items-center justify-center gap-2 hover:bg-[#06c07e] transition-colors
-            ${!open && "px-2"}`}
+            className="w-full py-3 text-sm bg-[#07D896] text-gray-900 rounded-full cursor-pointer flex items-center justify-center gap-2 hover:bg-[#06c07e] transition-colors"
           >
-            <LogOut size={16} />
+            <LogOut size={16} className="shrink-0" />
             {open && "Cerrar sesión"}
           </button>
         </div>
       </aside>
-
 
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="flex items-center justify-end px-6 py-4 border-b border-white/10 bg-white/5">
@@ -107,7 +120,6 @@ export default function DashboardLayout() {
               <p className="text-sm font-medium">{user?.name}</p>
               <p className="text-xs text-gray-400">{user?.email}</p>
             </div>
-
             <div className="w-10 h-10 rounded-full bg-[#07D896] text-black flex items-center justify-center font-bold">
               {user?.name?.charAt(0)}
             </div>
