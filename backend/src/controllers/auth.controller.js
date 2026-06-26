@@ -50,39 +50,22 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
+        const user = await prisma.user.findUnique({ where: { email } });
 
-        if (!user) {
-            return res.status(400).json({ message: "User not found" });
-        }
+        if (!user) return res.status(400).json({ message: "User not found" });
 
         const valid = await bcrypt.compare(password, user.password);
 
-        if (!valid) {
-            return res.status(400).json({ message: "Wrong password" });
-        }
+        if (!valid) return res.status(400).json({ message: "Wrong password" });
 
         const token = jwt.sign(
-            {
-                id: user.id,
-                email: user.email,
-                role: user.role
-            },
+            { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
 
-
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-
         return res.json({
+            token, // 👈 devuelves el token
             user: {
                 id: user.id,
                 name: user.name,
@@ -99,21 +82,18 @@ export const login = async (req, res) => {
 
 export const me = async (req, res) => {
     try {
-        const token = req.cookies.token;
+        const authHeader = req.headers.authorization;
 
-        if (!token) {
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({ message: "No token" });
         }
 
+        const token = authHeader.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await prisma.user.findUnique({
-            where: { id: decoded.id }
-        });
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        if (!user) return res.status(404).json({ message: "User not found" });
 
         return res.json({
             id: user.id,
@@ -128,11 +108,5 @@ export const me = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-    });
-
     return res.json({ message: "Logged out" });
 };

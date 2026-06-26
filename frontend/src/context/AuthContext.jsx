@@ -5,11 +5,13 @@ import { meRequest } from "../services/auth.service";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+    const token = localStorage.getItem("token");
+
     const auth = useQuery({
         queryKey: ["me"],
         queryFn: meRequest,
         retry: false,
-        staleTime: 1000 * 60 * 5,
+        enabled: !!token,
     });
 
     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;

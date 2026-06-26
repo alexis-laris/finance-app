@@ -7,6 +7,7 @@ export const registerRequest = async (data) => {
 
 export const loginRequest = async (data) => {
     const res = await api.post("/auth/login", data);
+    localStorage.setItem("token", res.data.token);
     return res.data;
 };
 
@@ -16,6 +17,6 @@ export const meRequest = async () => {
 };
 
 export const logoutRequest = async () => {
-    const res = await api.post("/auth/logout");
-    return res.data;
+    localStorage.removeItem("token");
+    return { message: "Logged out" };
 };

@@ -1,4 +1,4 @@
-import api from "../lib/axios";
+import api from "../api/axios";
 
 
 export const getExpensesRequest = async () => {
