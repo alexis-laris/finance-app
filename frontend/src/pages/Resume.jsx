@@ -14,6 +14,7 @@ import {
 
 
 import Loader from "../components/utils/Loader";
+import ExpensesChart from "../components/charts/ExpensesChart";
 
 function getNext15na() {
     const today = new Date();
@@ -242,12 +243,11 @@ export default function Resume() {
                 </div>
 
 
-                <div className="rounded-2xl border border-white/10 bg-linear-to-br from-purple-500/10 to-pink-500/5 flex items-center justify-center p-5">
-                    <div className="text-center text-purple-300">
-                        <BarChart3 className="mx-auto mb-2" />
-                        <p>Gráfica futura</p>
-                        <p className="text-xs text-gray-500">coming soon</p>
-                    </div>
+                <div className="rounded-2xl border border-white/10 bg-linear-to-br from-purple-500/10 to-pink-500/5 p-5">
+                    <h2 className="text-cyan-300 font-bold mb-5">
+                        Evolución de gastos
+                    </h2>
+                    <ExpensesChart data={data?.history ?? []} />
                 </div>
 
             </div>

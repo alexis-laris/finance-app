@@ -10,43 +10,38 @@ export const getDashboardResume = async (req, res) => {
         const startOfWeek = moment().startOf("isoWeek").toDate();
         const startOfMonth = moment().startOf("month").toDate();
 
-
         const expenses = await prisma.expense.findMany({
             where: {
                 userId,
-                createdAt: {
-                    gte: startOfMonth,
-                },
+                createdAt: { gte: startOfMonth }, // para métricas del mes
             },
             select: {
                 amount: true,
                 createdAt: true,
                 categoryId: true,
-                category: {
-                    select: {
-                        name: true,
-                        icon: true,
-                    },
-                },
+                category: { select: { name: true, icon: true } },
             },
         });
 
+        const historyExpenses = await prisma.expense.findMany({
+            where: {
+                userId,
+                createdAt: {
+                    gte: moment().subtract(3, "months").startOf("month").toDate(), // últimos 3 meses
+                },
+            },
+            select: {
+                amount: true,
+                createdAt: true,
+            },
+        });
 
         const weekExpenses = expenses.filter((e) =>
             moment(e.createdAt).isSameOrAfter(startOfWeek)
         );
 
-        const weekTotal = weekExpenses.reduce(
-            (acc, e) => acc + e.amount,
-            0
-        );
-
-
-        const monthTotal = expenses.reduce(
-            (acc, e) => acc + e.amount,
-            0
-        );
-
+        const weekTotal = weekExpenses.reduce((acc, e) => acc + e.amount, 0);
+        const monthTotal = expenses.reduce((acc, e) => acc + e.amount, 0);
 
         const categoryMap = {};
 
@@ -67,7 +62,22 @@ export const getDashboardResume = async (req, res) => {
         const byCategory = Object.values(categoryMap);
 
 
-        const now = new Date();
+        const historyMap = {};
+
+        historyExpenses.forEach((e) => {
+            const day = moment(e.createdAt).format("D [de] MMMM");
+            const sortKey = moment(e.createdAt).format("MMDD");
+
+            if (!historyMap[day]) {
+                historyMap[day] = { day, total: 0, sortKey };
+            }
+
+            historyMap[day].total += e.amount;
+        });
+
+        const history = Object.values(historyMap)
+            .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+            .map(({ day, total }) => ({ day, total }));
 
         const upcomingPayments = await prisma.payment.findMany({
             where: {
@@ -100,7 +110,6 @@ export const getDashboardResume = async (req, res) => {
             category: p.category ?? null,
         }));
 
-
         const savingGoals = await prisma.savingGoal.findMany({
             where: {
                 userId,
@@ -132,6 +141,7 @@ export const getDashboardResume = async (req, res) => {
             byCategory,
             upcomingPayments: upcomingPaymentsFormatted,
             savingGoals: savingGoalsFormatted,
+            history,
         });
 
     } catch (error) {

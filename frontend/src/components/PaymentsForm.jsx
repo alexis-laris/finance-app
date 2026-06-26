@@ -1,9 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoriesRequest } from "../services/categories.service";
-
 import { Button } from "@/components/ui/button";
-
 import {
     Car,
     Home,
@@ -16,8 +14,6 @@ import {
     Wifi,
     Smartphone,
     PiggyBank,
-    Pipette,
-    Check
 } from "lucide-react";
 
 const categoryIcons = {
