@@ -36,6 +36,7 @@ model Expense {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+  date      DateTime @default(now())
 
   @@index([userId])
 }
@@ -47,7 +48,9 @@ model Income {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  date        DateTime @default(now())
+  description String?
 
   @@index([userId])
 }

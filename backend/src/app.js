@@ -10,6 +10,7 @@ import categories from "./routes/categories.routes.js";
 import resume from "./routes/resume.routes.js";
 import payment from "./routes/payment.routes.js";
 import savings from "./routes/savings.routes.js";
+import calendar from "./routes/calendar.routes.js";
 
 dotenv.config();
 
@@ -38,5 +39,6 @@ app.use("/api/categories", categories);
 app.use("/api/resume", resume);
 app.use("/api/payment", payment);
 app.use("/api/savings", savings);
+app.use("/api/calendar", calendar);
 
 export default app;
