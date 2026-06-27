@@ -590,10 +590,10 @@ export default function Calendar() {
 
                     <div className="flex items-center gap-2">
                         {calendarLoading && <Loader2 size={13} className="animate-spin text-[#07D896]" />}
-                        <div className="flex rounded-lg border border-white/10 overflow-hidden">
+                        <div className="flex rounded-full border border-white/10 overflow-hidden">
                             <button
                                 onClick={() => calendarRef.current?.getApi().changeView("dayGridMonth")}
-                                className={`px-2.5 sm:px-3 py-1.5 text-xs font-medium transition cursor-pointer
+                                className={`rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-medium transition cursor-pointer
                                     ${viewType === "dayGridMonth"
                                         ? "bg-[#07D896]/10 text-[#07D896] border-r border-[#07D896]/30"
                                         : "bg-transparent text-gray-400 hover:text-white border-r border-white/10"}`}>

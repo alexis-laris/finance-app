@@ -52,11 +52,11 @@ export default function DashboardLayout() {
 
   const menu = [
     { name: "Inicio", icon: Home, path: "/dashboard", end: true },
-    { name: "Calendario", icon: Calendar, path: "/dashboard/calendar" },
+    { name: "Mi Calendario", icon: Calendar, path: "/dashboard/calendar" },
     { name: "Mis Gastos", icon: DollarSign, path: "/dashboard/expenses" },
     { name: "Pagos Futuros", icon: CheckCheck, path: "/dashboard/payments" },
-    { name: "Categorías", icon: Folder, path: "/dashboard/categories" },
-    { name: "Mis Metas", icon: Target, path: "/dashboard/savings" },
+    { name: "Mis Categorías", icon: Folder, path: "/dashboard/categories" },
+    { name: "Metas de Ahorro", icon: Target, path: "/dashboard/savings" },
   ];
 
   return (
