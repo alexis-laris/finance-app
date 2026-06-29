@@ -1,15 +1,17 @@
 import { PrismaClient } from "@prisma/client";
-import moment from "moment";
-import "moment/locale/es.js";
+import moment from "moment-timezone";
 
 moment.locale("es");
 const prisma = new PrismaClient();
 
+const TZ = "America/Mexico_City";
+const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
+const fmt = (date) => date ? moment(date).tz(TZ).locale("es").format(DATETIME_FORMAT) : null;
+const nowDate = () => moment().tz(TZ).toDate();
 
 export const createSavingGoal = async (req, res) => {
     try {
         const userId = req.user.id;
-
         const { name, targetAmount, deadline, note } = req.body;
 
         const goal = await prisma.savingGoal.create({
@@ -29,7 +31,6 @@ export const createSavingGoal = async (req, res) => {
     }
 };
 
-
 export const getSavingGoals = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -37,16 +38,12 @@ export const getSavingGoals = async (req, res) => {
         const goals = await prisma.savingGoal.findMany({
             where: { userId },
             orderBy: { createdAt: "desc" },
-            include: {
-                contributions: true,
-            },
+            include: { contributions: true },
         });
 
         const formattedGoals = goals.map((goal) => ({
             ...goal,
-            deadlineLabel: goal.deadline
-                ? moment(goal.deadline).format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
+            deadlineLabel: fmt(goal.deadline),
         }));
 
         return res.json(formattedGoals);
@@ -56,7 +53,6 @@ export const getSavingGoals = async (req, res) => {
     }
 };
 
-
 export const getSavingGoalById = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -65,9 +61,7 @@ export const getSavingGoalById = async (req, res) => {
         const goal = await prisma.savingGoal.findFirst({
             where: { id, userId },
             include: {
-                contributions: {
-                    orderBy: { createdAt: "desc" },
-                },
+                contributions: { orderBy: { createdAt: "desc" } },
             },
         });
 
@@ -78,36 +72,26 @@ export const getSavingGoalById = async (req, res) => {
         const totalSaved = goal.currentAmount;
         const remaining = Math.max(goal.targetAmount - totalSaved, 0);
 
-        const now = new Date();
+        const now = nowDate();
         const deadline = new Date(goal.deadline);
+        const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
 
-        const daysLeft = Math.ceil(
-            (deadline - now) / (1000 * 60 * 60 * 24)
-        );
-
-        const dailyNeeded =
-            daysLeft > 0 && remaining > 0 ? remaining / daysLeft : 0;
-
+        const dailyNeeded = daysLeft > 0 && remaining > 0 ? remaining / daysLeft : 0;
         const weeklyNeeded = dailyNeeded * 7;
         const monthlyNeeded = dailyNeeded * 30;
 
-        const progress =
-            goal.targetAmount > 0
-                ? Math.min((totalSaved / goal.targetAmount) * 100, 100)
-                : 0;
+        const progress = goal.targetAmount > 0
+            ? Math.min((totalSaved / goal.targetAmount) * 100, 100)
+            : 0;
 
         return res.json({
             ...goal,
             contributions: goal.contributions.map((c) => ({
                 ...c,
-                createdAtLabel: moment(c.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+                createdAtLabel: fmt(c.createdAt),
             })),
-            deadlineLabel: goal.deadline
-                ? moment(goal.deadline).format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
-            createdAtLabel: goal.createdAt
-                ? moment(goal.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
+            deadlineLabel: fmt(goal.deadline),
+            createdAtLabel: fmt(goal.createdAt),
             stats: {
                 totalSaved,
                 remaining,
@@ -123,7 +107,6 @@ export const getSavingGoalById = async (req, res) => {
         return res.status(500).json({ message: "Error obteniendo meta" });
     }
 };
-
 
 export const addContribution = async (req, res) => {
     try {
@@ -149,25 +132,15 @@ export const addContribution = async (req, res) => {
                 },
             });
 
-            const newTotal =
-                goal.currentAmount + Number(amount);
-
+            const newTotal = goal.currentAmount + Number(amount);
             let status = goal.status;
 
-            if (newTotal >= goal.targetAmount) {
-                status = "COMPLETED";
-            }
-
-            if (new Date(goal.deadline) < new Date() && newTotal < goal.targetAmount) {
-                status = "FAILED";
-            }
+            if (newTotal >= goal.targetAmount) status = "COMPLETED";
+            if (new Date(goal.deadline) < nowDate() && newTotal < goal.targetAmount) status = "FAILED";
 
             const updated = await tx.savingGoal.update({
                 where: { id },
-                data: {
-                    currentAmount: newTotal,
-                    status,
-                },
+                data: { currentAmount: newTotal, status },
             });
 
             return { updated, contribution };
@@ -179,7 +152,6 @@ export const addContribution = async (req, res) => {
         return res.status(500).json({ message: "Error agregando contribución" });
     }
 };
-
 
 export const updateSavingGoal = async (req, res) => {
     try {
@@ -213,7 +185,6 @@ export const updateSavingGoal = async (req, res) => {
     }
 };
 
-
 export const deleteSavingGoal = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -227,9 +198,7 @@ export const deleteSavingGoal = async (req, res) => {
             return res.status(404).json({ message: "Meta no encontrada" });
         }
 
-        await prisma.savingGoal.delete({
-            where: { id },
-        });
+        await prisma.savingGoal.delete({ where: { id } });
 
         return res.json({ message: "Meta eliminada correctamente" });
     } catch (error) {
@@ -238,13 +207,11 @@ export const deleteSavingGoal = async (req, res) => {
     }
 };
 
-
 export const updateContribution = async (req, res) => {
     try {
         const userId = req.user.id;
         const { id, contributionId } = req.params;
         const { amount, note, date } = req.body;
-
 
         const goal = await prisma.savingGoal.findFirst({
             where: { id, userId },
@@ -253,7 +220,6 @@ export const updateContribution = async (req, res) => {
         if (!goal) {
             return res.status(404).json({ message: "Meta no encontrada" });
         }
-
 
         const contribution = await prisma.savingGoalContribution.findFirst({
             where: { id: contributionId, savingGoalId: id },
@@ -276,10 +242,10 @@ export const updateContribution = async (req, res) => {
             });
 
             const newTotal = goal.currentAmount + diff;
-
             let status = goal.status;
+
             if (newTotal >= goal.targetAmount) status = "COMPLETED";
-            if (new Date(goal.deadline) < new Date() && newTotal < goal.targetAmount) status = "FAILED";
+            if (new Date(goal.deadline) < nowDate() && newTotal < goal.targetAmount) status = "FAILED";
 
             await tx.savingGoal.update({
                 where: { id },
@@ -296,12 +262,10 @@ export const updateContribution = async (req, res) => {
     }
 };
 
-
 export const deleteContribution = async (req, res) => {
     try {
         const userId = req.user.id;
         const { id, contributionId } = req.params;
-
 
         const goal = await prisma.savingGoal.findFirst({
             where: { id, userId },
@@ -320,17 +284,14 @@ export const deleteContribution = async (req, res) => {
         }
 
         await prisma.$transaction(async (tx) => {
-            await tx.savingGoalContribution.delete({
-                where: { id: contributionId },
-            });
+            await tx.savingGoalContribution.delete({ where: { id: contributionId } });
 
             const newTotal = goal.currentAmount - contribution.amount;
-
             let status = goal.status;
-            if (newTotal >= goal.targetAmount) status = "COMPLETED";
-            if (new Date(goal.deadline) < new Date() && newTotal < goal.targetAmount) status = "FAILED";
 
-            if (newTotal < goal.targetAmount && new Date(goal.deadline) >= new Date()) status = "ACTIVE"; // 👈
+            if (newTotal >= goal.targetAmount) status = "COMPLETED";
+            if (new Date(goal.deadline) < nowDate() && newTotal < goal.targetAmount) status = "FAILED";
+            if (newTotal < goal.targetAmount && new Date(goal.deadline) >= nowDate()) status = "ACTIVE";
 
             await tx.savingGoal.update({
                 where: { id },

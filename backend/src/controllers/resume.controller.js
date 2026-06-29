@@ -1,16 +1,22 @@
 import { PrismaClient } from "@prisma/client";
-import moment from "moment";
+import moment from "moment-timezone";
+
+moment.locale("es");
 
 const prisma = new PrismaClient();
+
+const TZ = "America/Mexico_City";
+const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
+const fmt = (date) => date ? moment(date).tz(TZ).locale("es").format(DATETIME_FORMAT) : null;
+const now = () => moment().tz(TZ);
 
 export const getDashboardResume = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        const startOfWeek = moment().startOf("isoWeek").toDate();
-        const startOfMonth = moment().startOf("month").toDate();
-        const startOf3Months = moment().subtract(3, "months").startOf("month").toDate();
-
+        const startOfWeek = now().startOf("isoWeek").toDate();
+        const startOfMonth = now().startOf("month").toDate();
+        const startOf3Months = now().subtract(3, "months").startOf("month").toDate();
 
         const [expenses, historyExpenses, paidPayments, historyPaidPayments, upcomingPayments, savingGoals] =
             await Promise.all([
@@ -23,20 +29,12 @@ export const getDashboardResume = async (req, res) => {
                         category: { select: { name: true, icon: true } },
                     },
                 }),
-
                 prisma.expense.findMany({
                     where: { userId, createdAt: { gte: startOf3Months } },
                     select: { amount: true, createdAt: true },
                 }),
-
-
                 prisma.payment.findMany({
-                    where: {
-                        userId,
-                        status: "PAID",
-                        type: "EXPENSE",
-                        paidAt: { gte: startOfMonth },
-                    },
+                    where: { userId, status: "PAID", type: "EXPENSE", paidAt: { gte: startOfMonth } },
                     select: {
                         amount: true,
                         paidAt: true,
@@ -44,18 +42,10 @@ export const getDashboardResume = async (req, res) => {
                         category: { select: { name: true, icon: true } },
                     },
                 }),
-
-
                 prisma.payment.findMany({
-                    where: {
-                        userId,
-                        status: "PAID",
-                        type: "EXPENSE",
-                        paidAt: { gte: startOf3Months },
-                    },
+                    where: { userId, status: "PAID", type: "EXPENSE", paidAt: { gte: startOf3Months } },
                     select: { amount: true, paidAt: true },
                 }),
-
                 prisma.payment.findMany({
                     where: { userId, status: "PENDING" },
                     orderBy: { scheduledAt: "asc" },
@@ -68,21 +58,15 @@ export const getDashboardResume = async (req, res) => {
                         category: { select: { name: true, icon: true } },
                     },
                 }),
-
                 prisma.savingGoal.findMany({
                     where: { userId, status: { in: ["ACTIVE", "COMPLETED"] } },
                     orderBy: { deadline: "asc" },
                     select: {
-                        id: true,
-                        name: true,
-                        targetAmount: true,
-                        currentAmount: true,
-                        deadline: true,
-                        note: true,
+                        id: true, name: true, targetAmount: true,
+                        currentAmount: true, deadline: true, note: true,
                     },
                 }),
             ]);
-
 
         const paidAsExpenses = paidPayments.map((p) => ({
             amount: p.amount,
@@ -96,13 +80,11 @@ export const getDashboardResume = async (req, res) => {
             createdAt: p.paidAt,
         }));
 
-
         const allExpenses = [...expenses, ...paidAsExpenses];
         const allHistoryExpenses = [...historyExpenses, ...paidAsHistoryExpenses];
 
-
         const weekExpenses = allExpenses.filter((e) =>
-            moment(e.createdAt).isSameOrAfter(startOfWeek)
+            moment(e.createdAt).tz(TZ).isSameOrAfter(startOfWeek)
         );
 
         const weekTotal = weekExpenses.reduce((acc, e) => acc + e.amount, 0);
@@ -112,7 +94,6 @@ export const getDashboardResume = async (req, res) => {
 
         allExpenses.forEach((e) => {
             const key = e.categoryId ?? "uncategorized";
-
             if (!categoryMap[key]) {
                 categoryMap[key] = {
                     categoryId: key,
@@ -120,23 +101,21 @@ export const getDashboardResume = async (req, res) => {
                     total: 0,
                 };
             }
-
             categoryMap[key].total += e.amount;
         });
 
         const byCategory = Object.values(categoryMap);
 
-
         const historyMap = {};
 
         allHistoryExpenses.forEach((e) => {
-            const day = moment(e.createdAt).format("D [de] MMMM");
-            const sortKey = moment(e.createdAt).format("YYYYMMDD");
+            const m = moment(e.createdAt).tz(TZ).locale("es");
+            const day = m.format("D [de] MMMM");
+            const sortKey = m.format("YYYYMMDD");
 
             if (!historyMap[day]) {
                 historyMap[day] = { day, total: 0, sortKey };
             }
-
             historyMap[day].total += e.amount;
         });
 
@@ -144,20 +123,15 @@ export const getDashboardResume = async (req, res) => {
             .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
             .map(({ day, total }) => ({ day, total }));
 
-
         const upcomingPaymentsFormatted = upcomingPayments.map((p) => ({
             ...p,
-            scheduledAtLabel: p.scheduledAt
-                ? moment(p.scheduledAt).format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
+            scheduledAtLabel: fmt(p.scheduledAt),
             category: p.category ?? null,
         }));
 
         const savingGoalsFormatted = savingGoals.map((g) => ({
             ...g,
-            deadlineLabel: g.deadline
-                ? moment(g.deadline).format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
+            deadlineLabel: fmt(g.deadline),
         }));
 
         return res.json({
@@ -174,4 +148,3 @@ export const getDashboardResume = async (req, res) => {
         return res.status(500).json({ message: "Error al obtener dashboard" });
     }
 };
-

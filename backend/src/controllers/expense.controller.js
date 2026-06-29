@@ -1,9 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import moment from "moment";
-const prisma = new PrismaClient();
-import "moment/locale/es.js";
+import moment from "moment-timezone";
 
 moment.locale("es");
+
+const prisma = new PrismaClient();
+
+const TZ = "America/Mexico_City";
+const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
+const fmt = (date) => date ? moment(date).tz(TZ).locale("es").format(DATETIME_FORMAT) : null;
 
 export const createExpense = async (req, res) => {
     try {
@@ -13,7 +17,7 @@ export const createExpense = async (req, res) => {
             data: {
                 amount,
                 description,
-                ...(date && { createdAt: new Date(date) }), // sobreescribe el default
+                ...(date && { createdAt: new Date(date) }),
                 user: { connect: { id: req.user.id } },
                 ...(categoryId && { category: { connect: { id: categoryId } } }),
             },
@@ -26,44 +30,33 @@ export const createExpense = async (req, res) => {
     }
 };
 
-
 export const getExpenses = async (req, res) => {
     try {
         const expenses = await prisma.expense.findMany({
             where: { userId: req.user.id },
-            include: {
-                category: true,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
+            include: { category: true },
+            orderBy: { createdAt: "desc" },
         });
 
         const formattedExpenses = expenses.map((exp) => ({
             ...exp,
-            createdAtFormatted: moment(exp.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+            createdAtFormatted: fmt(exp.createdAt),
         }));
 
         res.json(formattedExpenses);
-
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching expenses" });
     }
 };
 
-
 export const updateExpense = async (req, res) => {
     try {
         const { id } = req.params;
         const { amount, categoryId, description, date } = req.body;
 
-
         const existingExpense = await prisma.expense.findFirst({
-            where: {
-                id,
-                userId: req.user.id,
-            },
+            where: { id, userId: req.user.id },
         });
 
         if (!existingExpense) {
@@ -89,26 +82,19 @@ export const updateExpense = async (req, res) => {
     }
 };
 
-
 export const deleteExpense = async (req, res) => {
     try {
         const { id } = req.params;
 
-
         const existingExpense = await prisma.expense.findFirst({
-            where: {
-                id,
-                userId: req.user.id,
-            },
+            where: { id, userId: req.user.id },
         });
 
         if (!existingExpense) {
             return res.status(404).json({ message: "Expense not found" });
         }
 
-        await prisma.expense.delete({
-            where: { id },
-        });
+        await prisma.expense.delete({ where: { id } });
 
         res.json({ message: "Expense deleted successfully" });
     } catch (error) {

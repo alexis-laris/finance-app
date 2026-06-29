@@ -1,14 +1,19 @@
 import { PrismaClient } from "@prisma/client";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/es.js";
 
 moment.locale("es");
 
 const prisma = new PrismaClient();
 
+const TZ = "America/Mexico_City";
 const DATE_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
 const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
 const MXN = (amount) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(amount);
+
+
+const fmt = (date, format = DATETIME_FORMAT) =>
+    moment(date).tz(TZ).locale("es").format(format);
 
 
 export const getCalendar = async (req, res) => {
@@ -16,7 +21,7 @@ export const getCalendar = async (req, res) => {
         const userId = req.user.id;
         const { month } = req.query;
 
-        const reference = month ? moment(`${month}-01`, "YYYY-MM-DD") : moment();
+        const reference = month ? moment.tz(`${month}-01`, "YYYY-MM-DD", TZ) : moment().tz(TZ);
         const from = reference.clone().startOf("month").toDate();
         const to = reference.clone().endOf("month").toDate();
 
@@ -24,50 +29,30 @@ export const getCalendar = async (req, res) => {
             prisma.expense.findMany({
                 where: { userId, date: { gte: from, lte: to } },
                 select: {
-                    id: true,
-                    amount: true,
-                    description: true,
-                    date: true,
+                    id: true, amount: true, description: true, date: true,
                     category: { select: { id: true, name: true, icon: true, color: true } },
                 },
                 orderBy: { date: "asc" },
             }),
-
             prisma.income.findMany({
                 where: { userId, date: { gte: from, lte: to } },
-                select: {
-                    id: true,
-                    amount: true,
-                    description: true,
-                    date: true,
-                },
+                select: { id: true, amount: true, description: true, date: true },
                 orderBy: { date: "asc" },
             }),
-
             prisma.payment.findMany({
                 where: { userId, scheduledAt: { gte: from, lte: to } },
                 select: {
-                    id: true,
-                    name: true,
-                    amount: true,
-                    description: true,
-                    type: true,
-                    status: true,
-                    scheduledAt: true,
+                    id: true, name: true, amount: true, description: true,
+                    type: true, status: true, scheduledAt: true,
                     category: { select: { id: true, name: true, icon: true, color: true } },
                 },
                 orderBy: { scheduledAt: "asc" },
             }),
-
             prisma.savingGoal.findMany({
                 where: { userId, deadline: { gte: from, lte: to } },
                 select: {
-                    id: true,
-                    name: true,
-                    targetAmount: true,
-                    currentAmount: true,
-                    deadline: true,
-                    status: true,
+                    id: true, name: true, targetAmount: true,
+                    currentAmount: true, deadline: true, status: true,
                 },
                 orderBy: { deadline: "asc" },
             }),
@@ -83,64 +68,43 @@ export const getCalendar = async (req, res) => {
         };
 
         expenses.forEach((e) =>
-            addToDay(
-                toDateKey(e.date),
-                "expenses",
-                {
-                    ...e,
-                    eventType: "expense",
-
-                    date: e.date.toISOString(),
-                    dateFormatted: moment(e.date).format(DATETIME_FORMAT),
-                    amountFormatted: MXN(e.amount),
-                }
-            )
+            addToDay(toDateKey(e.date), "expenses", {
+                ...e,
+                eventType: "expense",
+                date: e.date.toISOString(),
+                dateFormatted: fmt(e.date),
+                amountFormatted: MXN(e.amount),
+            })
         );
 
         incomes.forEach((i) =>
-            addToDay(
-                toDateKey(i.date),
-                "incomes",
-                {
-                    ...i,
-                    eventType: "income",
-
-                    date: i.date.toISOString(),
-                    dateFormatted: moment(i.date).format(DATETIME_FORMAT),
-                    amountFormatted: MXN(i.amount),
-                }
-            )
+            addToDay(toDateKey(i.date), "incomes", {
+                ...i,
+                eventType: "income",
+                date: i.date.toISOString(),
+                dateFormatted: fmt(i.date),
+                amountFormatted: MXN(i.amount),
+            })
         );
 
         payments.forEach((p) =>
-            addToDay(
-                toDateKey(p.scheduledAt),
-                "payments",
-                {
-                    ...p,
-                    eventType: "payment",
-                    scheduledAtFormatted: moment(p.scheduledAt).format(DATETIME_FORMAT),
-                    amountFormatted: MXN(p.amount),
-                }
-            )
+            addToDay(toDateKey(p.scheduledAt), "payments", {
+                ...p,
+                eventType: "payment",
+                scheduledAtFormatted: fmt(p.scheduledAt),
+                amountFormatted: MXN(p.amount),
+            })
         );
 
         savingGoals.forEach((g) =>
-            addToDay(
-                toDateKey(g.deadline),
-                "savingGoals",
-                {
-                    ...g,
-                    eventType: "savingGoal",
-                    deadlineFormatted: moment(g.deadline).format(DATE_FORMAT),
-                    targetAmountFormatted: MXN(g.targetAmount),
-                    currentAmountFormatted: MXN(g.currentAmount),
-                    progressPercent: Math.min(
-                        Math.round((g.currentAmount / g.targetAmount) * 100),
-                        100
-                    ),
-                }
-            )
+            addToDay(toDateKey(g.deadline), "savingGoals", {
+                ...g,
+                eventType: "savingGoal",
+                deadlineFormatted: fmt(g.deadline, DATE_FORMAT),
+                targetAmountFormatted: MXN(g.targetAmount),
+                currentAmountFormatted: MXN(g.currentAmount),
+                progressPercent: Math.min(Math.round((g.currentAmount / g.targetAmount) * 100), 100),
+            })
         );
 
         return res.status(200).json({
@@ -164,7 +128,7 @@ export const getCalendarDay = async (req, res) => {
             return res.status(400).json({ message: "El parámetro date es requerido (YYYY-MM-DD)" });
         }
 
-        const parsed = moment(date, "YYYY-MM-DD", true);
+        const parsed = moment.tz(date, "YYYY-MM-DD", true, TZ);
         if (!parsed.isValid()) {
             return res.status(400).json({ message: "Formato de fecha inválido. Usa YYYY-MM-DD" });
         }
@@ -178,18 +142,15 @@ export const getCalendarDay = async (req, res) => {
                 include: { category: true },
                 orderBy: { date: "asc" },
             }),
-
             prisma.income.findMany({
                 where: { userId, date: { gte: from, lte: to } },
                 orderBy: { date: "asc" },
             }),
-
             prisma.payment.findMany({
                 where: { userId, scheduledAt: { gte: from, lte: to } },
                 include: { category: true },
                 orderBy: { scheduledAt: "asc" },
             }),
-
             prisma.savingGoal.findMany({
                 where: { userId, deadline: { gte: from, lte: to } },
                 include: { contributions: { orderBy: { createdAt: "desc" }, take: 5 } },
@@ -202,47 +163,41 @@ export const getCalendarDay = async (req, res) => {
         const totalPayments = payments.reduce((sum, p) => sum + p.amount, 0);
 
         const summary = {
-            totalExpenses,
-            totalIncomes,
-            totalPayments,
+            totalExpenses, totalIncomes, totalPayments,
             totalExpensesFormatted: MXN(totalExpenses),
             totalIncomesFormatted: MXN(totalIncomes),
             totalPaymentsFormatted: MXN(totalPayments),
             eventCount: expenses.length + incomes.length + payments.length + savingGoals.length,
         };
 
-
         const formattedExpenses = expenses.map((e) => ({
             ...e,
-            dateFormatted: moment(e.date).format(DATETIME_FORMAT),
+            dateFormatted: fmt(e.date),
             amountFormatted: MXN(e.amount),
         }));
 
         const formattedIncomes = incomes.map((i) => ({
             ...i,
-            dateFormatted: moment(i.date).format(DATETIME_FORMAT),
+            dateFormatted: fmt(i.date),
             amountFormatted: MXN(i.amount),
         }));
 
         const formattedPayments = payments.map((p) => ({
             ...p,
-            scheduledAtFormatted: moment(p.scheduledAt).format(DATETIME_FORMAT),
-            paidAtFormatted: p.paidAt ? moment(p.paidAt).format(DATETIME_FORMAT) : null,
+            scheduledAtFormatted: fmt(p.scheduledAt),
+            paidAtFormatted: p.paidAt ? fmt(p.paidAt) : null,
             amountFormatted: MXN(p.amount),
         }));
 
         const formattedSavingGoals = savingGoals.map((g) => ({
             ...g,
-            deadlineFormatted: moment(g.deadline).format(DATE_FORMAT),
+            deadlineFormatted: fmt(g.deadline, DATE_FORMAT),
             targetAmountFormatted: MXN(g.targetAmount),
             currentAmountFormatted: MXN(g.currentAmount),
-            progressPercent: Math.min(
-                Math.round((g.currentAmount / g.targetAmount) * 100),
-                100
-            ),
+            progressPercent: Math.min(Math.round((g.currentAmount / g.targetAmount) * 100), 100),
             contributions: g.contributions.map((c) => ({
                 ...c,
-                createdAtFormatted: moment(c.createdAt).format(DATETIME_FORMAT),
+                createdAtFormatted: fmt(c.createdAt),
                 amountFormatted: MXN(c.amount),
             })),
         }));
@@ -262,4 +217,4 @@ export const getCalendarDay = async (req, res) => {
     }
 };
 
-const toDateKey = (date) => moment(date).format("YYYY-MM-DD");
+const toDateKey = (date) => moment(date).tz(TZ).format("YYYY-MM-DD");

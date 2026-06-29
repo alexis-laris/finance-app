@@ -1,10 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import moment from "moment";
-import "moment/locale/es.js";
+import moment from "moment-timezone";
 
 moment.locale("es");
 
 const prisma = new PrismaClient();
+
+const TZ = "America/Mexico_City";
+const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
+const MXN = (amount) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(amount);
+
+const fmt = (date) => date ? moment(date).tz(TZ).locale("es").format(DATETIME_FORMAT) : null;
 
 export const createCategory = async (req, res) => {
     try {
@@ -34,21 +39,16 @@ export const createCategory = async (req, res) => {
 export const getCategories = async (req, res) => {
     try {
         const categories = await prisma.category.findMany({
-            where: {
-                userId: req.user.id,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
+            where: { userId: req.user.id },
+            orderBy: { createdAt: "desc" },
         });
 
         const formattedCategories = categories.map((cat) => ({
             ...cat,
-            createdAtFormatted: moment(cat.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+            createdAtFormatted: fmt(cat.createdAt),
         }));
 
         res.json(formattedCategories);
-
     } catch (error) {
         console.error("GET_CATEGORIES_ERROR:", error);
         res.status(500).json({ message: "Error fetching categories" });
@@ -61,10 +61,7 @@ export const updateCategory = async (req, res) => {
         const { name, icon, color, description } = req.body;
 
         const existing = await prisma.category.findFirst({
-            where: {
-                id,
-                userId: req.user.id,
-            },
+            where: { id, userId: req.user.id },
         });
 
         if (!existing) {
@@ -73,12 +70,7 @@ export const updateCategory = async (req, res) => {
 
         const updated = await prisma.category.update({
             where: { id },
-            data: {
-                name,
-                icon,
-                color,
-                description
-            },
+            data: { name, icon, color, description },
         });
 
         res.json(updated);
@@ -93,19 +85,14 @@ export const deleteCategory = async (req, res) => {
         const { id } = req.params;
 
         const existing = await prisma.category.findFirst({
-            where: {
-                id,
-                userId: req.user.id,
-            },
+            where: { id, userId: req.user.id },
         });
 
         if (!existing) {
             return res.status(404).json({ message: "Category not found" });
         }
 
-        await prisma.category.delete({
-            where: { id },
-        });
+        await prisma.category.delete({ where: { id } });
 
         res.json({ message: "Category deleted successfully" });
     } catch (error) {
@@ -119,21 +106,10 @@ export const getCategoryById = async (req, res) => {
         const { id } = req.params;
 
         const category = await prisma.category.findFirst({
-            where: {
-                id,
-                userId: req.user.id,
-            },
+            where: { id, userId: req.user.id },
             include: {
-                expenses: {
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-                },
-                payments: {
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-                },
+                expenses: { orderBy: { createdAt: "desc" } },
+                payments: { orderBy: { createdAt: "desc" } },
             },
         });
 
@@ -141,47 +117,27 @@ export const getCategoryById = async (req, res) => {
             return res.status(404).json({ message: "Category not found" });
         }
 
-
-        const totalExpenses = category.expenses.reduce(
-            (sum, exp) => sum + exp.amount,
-            0
-        );
-
-
-        const totalPayments = category.payments.reduce(
-            (sum, pay) => sum + pay.amount,
-            0
-        );
+        const totalExpenses = category.expenses.reduce((sum, e) => sum + e.amount, 0);
+        const totalPayments = category.payments.reduce((sum, p) => sum + p.amount, 0);
 
         const formattedCategory = {
             ...category,
-
-            createdAtFormatted: moment(category.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
-
+            createdAtFormatted: fmt(category.createdAt),
             expensesCount: category.expenses.length,
             paymentsCount: category.payments.length,
-
             totalExpenses,
             totalPayments,
-
-            expenses: category.expenses.slice(0, 10).map((expense) => ({
-                ...expense,
-                createdAtFormatted: moment(expense.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
-                amountFormatted: new Intl.NumberFormat("es-MX", {
-                    style: "currency",
-                    currency: "MXN",
-                }).format(expense.amount),
+            expenses: category.expenses.slice(0, 10).map((e) => ({
+                ...e,
+                createdAtFormatted: fmt(e.createdAt),
+                amountFormatted: MXN(e.amount),
             })),
-
-            payments: category.payments.slice(0, 10).map((payment) => ({
-                ...payment,
-                createdAtFormatted: moment(payment.createdAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
-                scheduledAtFormatted: moment(payment.scheduledAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
-                paidAtFormatted: moment(payment.paidAt).format("D [de] MMMM [del] YYYY [a la] h:mm A"),
-                amountFormatted: new Intl.NumberFormat("es-MX", {
-                    style: "currency",
-                    currency: "MXN",
-                }).format(payment.amount),
+            payments: category.payments.slice(0, 10).map((p) => ({
+                ...p,
+                createdAtFormatted: fmt(p.createdAt),
+                scheduledAtFormatted: fmt(p.scheduledAt),
+                paidAtFormatted: fmt(p.paidAt), // ya maneja null con el helper
+                amountFormatted: MXN(p.amount),
             })),
         };
 

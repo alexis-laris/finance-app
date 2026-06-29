@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import moment from "moment";
-const prisma = new PrismaClient();
+import moment from "moment-timezone";
 import "moment/locale/es.js";
+
+
+const prisma = new PrismaClient();
 
 moment.locale("es");
 
@@ -56,7 +58,7 @@ export const getPayments = async (req, res) => {
 
         const formattedPayments = payments.map((p) => ({
             ...p,
-            scheduledAtLabel: moment(p.scheduledAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A"),
+            scheduledAtLabel: moment(p.scheduledAt).tz("America/Mexico_City").locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A"),
             paidAtLabel: p.paidAt
                 ? moment(p.paidAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
@@ -194,7 +196,7 @@ export const togglePaymentStatus = async (req, res) => {
         res.json({
             ...updated,
             paidAtLabel: updated.paidAt
-                ? moment(updated.paidAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
+                ? moment(updated.paidAt).tz("America/Mexico_City").locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
                 : null,
         });
     } catch (error) {
