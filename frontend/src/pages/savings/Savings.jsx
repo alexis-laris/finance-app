@@ -21,10 +21,10 @@ import {
     createSavingGoalRequest,
     updateSavingGoalRequest,
     deleteSavingGoalRequest,
-} from "../services/savings.service";
-import Loader from "../components/utils/Loader";
-import SavingGoalForm from "../components/SavingGoalForm";
-import formatToMXN from "../lib/formatMXN";
+} from "../../services/savings.service";
+import Loader from "../../components/utils/Loader";
+import SavingGoalForm from "../../components/SavingGoalForm";
+import formatToMXN from "../../lib/formatMXN";
 
 export default function Savings() {
     const [open, setOpen] = useState(false);

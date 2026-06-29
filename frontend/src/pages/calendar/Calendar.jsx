@@ -15,9 +15,9 @@ import {
     DialogContent,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { getCalendarRequest, getCalendarDayRequest } from "../services/calendar.service";
-import { resolveCategoryIcon } from "../components/CategoryForm";
-import formatToMXN from "../lib/formatMXN";
+import { getCalendarRequest, getCalendarDayRequest } from "../../services/calendar.service";
+import { resolveCategoryIcon } from "../../components/CategoryForm";
+import formatToMXN from "../../lib/formatMXN";
 
 const EVENT_CONFIG = {
     expense: { label: "Gastos", fallbackColor: "#07D896", text: "#07D896" },

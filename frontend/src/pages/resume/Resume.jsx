@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useMemo } from "react";
-import { getDashboardResumeRequest } from "../services/resume.service";
-import formatToMXN from "../lib/formatMXN";
+import { getDashboardResumeRequest } from "../../services/resume.service";
+import formatToMXN from "../../lib/formatMXN";
 
 import {
     Calendar,
@@ -11,8 +11,8 @@ import {
     BarChart3,
 } from "lucide-react";
 
-import Loader from "../components/utils/Loader";
-import ExpensesChart from "../components/charts/ExpensesChart";
+import Loader from "../../components/utils/Loader";
+import ExpensesChart from "../../components/charts/ExpensesChart";
 
 function getNext15na() {
     const today = new Date();

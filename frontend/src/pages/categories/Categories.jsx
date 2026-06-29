@@ -21,10 +21,10 @@ import {
     createCategoryRequest,
     updateCategoryRequest,
     deleteCategoryRequest,
-} from "../services/categories.service";
+} from "../../services/categories.service";
 
-import CategoryForm, { resolveCategoryIcon } from "../components/CategoryForm";
-import Loader from "../components/utils/Loader";
+import CategoryForm, { resolveCategoryIcon } from "../../components/CategoryForm";
+import Loader from "../../components/utils/Loader";
 
 export default function Categories() {
     const [open, setOpen] = useState(false);

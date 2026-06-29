@@ -25,11 +25,11 @@ import {
     createExpenseRequest,
     updateExpenseRequest,
     deleteExpenseRequest
-} from "../services/expenses.service";
+} from "../../services/expenses.service";
 
-import ExpenseForm from "../components/ExpenseForm";
-import formatToMXN from "../lib/formatMXN"
-import Loader from "../components/utils/Loader";
+import ExpenseForm from "../../components/ExpenseForm";
+import formatToMXN from "../../lib/formatMXN"
+import Loader from "../../components/utils/Loader";
 
 const categoryIcons = {
     car: Car,

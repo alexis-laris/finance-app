@@ -10,14 +10,14 @@ import Login from "./pages/Login";
 import DashboardLayout from "./components/layouts/DashboardLayout.jsx";
 import PublicLayout from "./components/layouts/PublicLayout";
 
-import Resume from "./pages/Resume";
-import Categories from "./pages/Categories";
-import CategoriesDetail from "./pages/CategoriesDetail";
-import Expenses from "./pages/Expenses";
-import Payments from "./pages/Payments";
-import Savings from "./pages/Savings";
-import SavingGoalDetail from "./pages/SavingGoalDetail";
-import Calendar from "./pages/Calendar";
+import Resume from "./pages/resume/Resume";
+import Categories from "./pages/categories/Categories";
+import CategoriesDetail from "./pages/categories/CategoriesDetail";
+import Expenses from "./pages/expenses/Expenses";
+import Payments from "./pages/payments/Payments";
+import Savings from "./pages/savings/Savings";
+import SavingGoalDetail from "./pages/savings/SavingGoalDetail";
+import Calendar from "./pages/calendar/Calendar";
 
 export default function App() {
   return (

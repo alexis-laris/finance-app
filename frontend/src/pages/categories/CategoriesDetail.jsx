@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCategoryByIdRequest } from "../services/categories.service";
-import Loader from "../components/utils/Loader";
+import { getCategoryByIdRequest } from "../../services/categories.service";
+import Loader from "../../components/utils/Loader";
 import {
     ArrowLeft,
     Car,
@@ -19,7 +19,7 @@ import {
     Smartphone,
     PiggyBank,
 } from "lucide-react";
-import formatToMXN from "../lib/formatMXN";
+import formatToMXN from "../../lib/formatMXN";
 
 const categoryIcons = {
     car: Car,

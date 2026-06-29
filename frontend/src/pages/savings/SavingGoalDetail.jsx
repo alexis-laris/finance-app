@@ -9,15 +9,15 @@ import {
     AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Plus, Trash2, Pencil, ArrowLeft, Calendar, TrendingUp } from "lucide-react";
-import SavingContributionForm from "../components/SavingContributionForm";
+import SavingContributionForm from "../../components/SavingContributionForm";
 import {
     getSavingGoalByIdRequest,
     addSavingContributionRequest,
     updateContributionRequest,
     deleteContributionRequest,
-} from "../services/savings.service";
-import formatToMXN from "../lib/formatMXN";
-import Loader from "../components/utils/Loader";
+} from "../../services/savings.service";
+import formatToMXN from "../../lib/formatMXN";
+import Loader from "../../components/utils/Loader";
 
 
 export default function SavingGoalDetail() {

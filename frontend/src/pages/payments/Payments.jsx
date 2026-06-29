@@ -38,11 +38,11 @@ import {
     updatePaymentRequest,
     deletePaymentRequest,
     togglePaymentStatusRequest,
-} from "../services/payments.service";
+} from "../../services/payments.service";
 
-import PaymentForm from "../components/PaymentsForm";
-import formatToMXN from "../lib/formatMXN";
-import Loader from "../components/utils/Loader";
+import PaymentForm from "../../components/PaymentsForm";
+import formatToMXN from "../../lib/formatMXN";
+import Loader from "../../components/utils/Loader";
 
 const categoryIcons = {
     car: Car,
