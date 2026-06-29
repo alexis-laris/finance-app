@@ -1,6 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap");
 @import 'tailwindcss';
 @plugin 'lightswind/plugin';
+@plugin "tailwind-scrollbar";
+
+
 body {
   font-family: "Montserrat", sans-serif;
 }
@@ -135,3 +138,4 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: invert(56%) sepia(88%) saturate(600%) hue-rotate(110deg);
   cursor: pointer;
 }
+

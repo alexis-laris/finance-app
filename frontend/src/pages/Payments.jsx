@@ -246,7 +246,7 @@ export default function Payments() {
                                         return (
                                             <div
                                                 key={p.id}
-                                                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115] p-5 hover:scale-[1.02] transition"
+                                                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-[#0B0F27] to-[#0f1115] p-5 hover:scale-[1.02] transition duration-300"
                                             >
 
 

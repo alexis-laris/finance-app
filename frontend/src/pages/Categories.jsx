@@ -261,13 +261,17 @@ export default function Categories() {
                 <Dialog open={open} onOpenChange={(v) => !v && handleCloseModal()}>
                     <DialogContent
                         className="
-            w-[95vw]
-            sm:max-w-lg
-            lg:max-w-xl
-            max-h-[90vh]
-            overflow-y-auto
-            p-0
-        "
+        w-[95vw]
+        sm:max-w-lg
+        lg:max-w-xl
+        max-h-[90vh]
+        overflow-y-auto
+        p-0
+        scrollbar-thin
+        scrollbar-track-transparent
+        scrollbar-thumb-white/20
+        hover:scrollbar-thumb-white/40
+    "
                     >
                         <CategoryForm
                             category={editingCategory}
