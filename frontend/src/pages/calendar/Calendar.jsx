@@ -563,7 +563,7 @@ export default function Calendar() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-white">Calendario</h1>
+                    <h1 className="text-2xl font-bold">Calendario</h1>
                     <p className="text-sm text-gray-400">Visualiza tus finanzas en el tiempo</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
