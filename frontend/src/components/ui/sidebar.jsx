@@ -135,7 +135,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-[#090D21] p-0 text-white [&>button]:hidden"
+          className="w-(--sidebar-width) bg-[#0B0F27] p-0 text-white [&>button]:hidden"
           style={{ "--sidebar-width": SIDEBAR_WIDTH_MOBILE }}
           side={side}>
           <SheetHeader className="sr-only">
@@ -180,7 +180,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="flex size-full flex-col bg-[#090D21] group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border">
+          className="flex size-full flex-col bg-[#0B0F27] group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border">
           {children}
         </div>
       </div>
