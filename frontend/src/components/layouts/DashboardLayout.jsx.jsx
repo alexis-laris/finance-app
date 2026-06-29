@@ -64,10 +64,9 @@ export default function DashboardLayout() {
 
       <aside
         className={`bg-white/5 border-r border-white/10 flex flex-col h-screen sticky top-0 transition-all duration-300
-        ${open ? "w-64" : "w-16"}`}
+    ${open ? "w-64" : "w-16"}`}
       >
-
-        <div className="flex flex-col flex-1 overflow-y-auto p-3">
+        <div className="flex flex-col flex-1 overflow-y-auto p-3 min-h-0">
           <div className="flex items-center justify-between mb-8 h-10">
             {open && (
               <h2 className="text-[#07D896] font-bold text-lg">Finance App</h2>
@@ -90,7 +89,7 @@ export default function DashboardLayout() {
                   end={item.end}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                    ${isActive ? "bg-white/10 text-[#07D896]" : "hover:bg-white/10"}`
+                            ${isActive ? "bg-white/10 text-[#07D896]" : "hover:bg-white/10"}`
                   }
                 >
                   <Icon size={18} className="shrink-0" />
@@ -101,8 +100,7 @@ export default function DashboardLayout() {
           </nav>
         </div>
 
-
-        <div className="p-3 border-t border-white/10 mt-auto">
+        <div className="p-3 border-t border-white/10 shrink-0">
           <button
             onClick={() => logoutMutation.mutate()}
             className="w-full py-3 text-sm bg-[#07D896] text-gray-900 rounded-full cursor-pointer flex items-center justify-center gap-2 hover:bg-[#06c07e] transition-colors"
