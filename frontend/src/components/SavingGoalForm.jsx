@@ -89,9 +89,7 @@ export default function SavingGoalForm({ goal, onSubmit, onClose }) {
             <form className="font-Montserrat text-white bg-[#0B0F27] p-6">
 
                 <div className="flex flex-col items-center gap-4 pb-2 pt-1">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[#07D896]">
-                        💰
-                    </div>
+
 
                     <h2 className="text-xl font-semibold">
                         {isEditing ? "Editar meta" : "Nueva meta de ahorro"}

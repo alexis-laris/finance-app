@@ -79,9 +79,7 @@ export default function SavingContributionForm({ contribution, onSubmit, onClose
             <form className="font-Montserrat text-white bg-[#0B0F27] p-6">
 
                 <div className="flex flex-col items-center gap-3 pb-2 pt-1">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[#07D896]">
-                        💰
-                    </div>
+
                     <h2 className="text-lg font-semibold">
                         {isEditing ? "Editar contribución" : "Nueva contribución"}
                     </h2>
