@@ -246,39 +246,43 @@ export default function SavingGoalDetail() {
                                     {goal.contributions.map((c) => (
                                         <div
                                             key={c.id}
-                                            className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-4"
+                                            className="flex flex-col rounded-2xl border border-white/5 bg-white/5 p-4 gap-2"
                                         >
-                                            <div>
-                                                <p className="text-white font-medium">
-                                                    {c.note || "Ahorro"}
-                                                </p>
 
-                                                <p className="text-sm text-gray-400">
-                                                    Registrado: <span className="font-bold text-white">{c.createdAtLabel}</span>
-                                                </p>
-                                            </div>
+                                            <p className="text-white font-medium truncate">
+                                                {c.note || "Ahorro"}
+                                            </p>
 
-                                            <div className="flex items-center gap-3">
 
+                                            <div className="flex items-center justify-between">
                                                 <span className="font-semibold text-[#07D896]">
                                                     +{formatToMXN(c.amount)}
                                                 </span>
 
-                                                <Button
-                                                    onClick={() => setEditingContribution(c)}
-                                                    className="rounded-md bg-black/40 p-1.5 h-auto w-auto text-white hover:border-[#07D896] cursor-pointer"
-                                                >
-                                                    <Pencil size={14} />
-                                                </Button>
+                                                <div className="flex items-center gap-2">
+                                                    <Button
+                                                        onClick={() => setEditingContribution(c)}
+                                                        className="rounded-md bg-black/40 p-1.5 h-auto w-auto text-white hover:border-[#07D896] cursor-pointer"
+                                                    >
+                                                        <Pencil size={14} />
+                                                    </Button>
 
-                                                <Button
-                                                    onClick={() => setDeletingContribution(c)}
-                                                    className="rounded-md bg-black/40 p-1.5 h-auto w-auto text-gray-400 hover:border-red-500 hover:text-white cursor-pointer"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </Button>
-
+                                                    <Button
+                                                        onClick={() => setDeletingContribution(c)}
+                                                        className="rounded-md bg-black/40 p-1.5 h-auto w-auto text-gray-400 hover:border-red-500 hover:text-white cursor-pointer"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </Button>
+                                                </div>
                                             </div>
+
+
+                                            <p className="text-sm text-gray-400">
+                                                Registrado:{" "}
+                                                <span className="font-bold text-white">
+                                                    {c.createdAtLabel}
+                                                </span>
+                                            </p>
                                         </div>
                                     ))}
 
