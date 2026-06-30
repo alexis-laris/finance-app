@@ -54,7 +54,7 @@ const categoryIcons = {
     gamepad2: Gamepad2,
     wifi: Wifi,
     smartphone: Smartphone,
-    piggybank: PiggyBank,
+    piggyBank: PiggyBank,
     default: Folder,
 };
 
@@ -189,7 +189,7 @@ export default function Payments() {
                 <div className="space-y-10">
                     {Object.entries(groupedPayments).map(([name, group], index) => {
                         const Icon =
-                            categoryIcons[group.category?.icon?.toLowerCase()] ||
+                            categoryIcons[group.category?.icon] ||
                             categoryIcons.default;
 
                         return (

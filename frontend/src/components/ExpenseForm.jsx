@@ -26,7 +26,7 @@ const categoryIcons = {
     gamepad2: Gamepad2,
     wifi: Wifi,
     smartphone: Smartphone,
-    piggybank: PiggyBank,
+    piggyBank: PiggyBank,
     default: Folder,
 };
 

@@ -34,14 +34,14 @@ import Loader from "../../components/utils/Loader";
 const categoryIcons = {
     car: Car,
     home: Home,
-    shopping: ShoppingBag,
-    utensils: UtensilsCrossed,
-    health: HeartPulse,
-    creditcard: CreditCard,
+    shoppingBag: ShoppingBag,
+    utensilsCrossed: UtensilsCrossed,
+    heartPulse: HeartPulse,
+    creditCard: CreditCard,
     gamepad2: Gamepad2,
     wifi: Wifi,
     smartphone: Smartphone,
-    piggybank: PiggyBank,
+    piggyBank: PiggyBank,
     default: Folder,
 };
 
@@ -189,7 +189,7 @@ export default function Expenses() {
 
                     {Object.entries(groupedExpenses).map(([name, group], index) => {
                         const Icon =
-                            categoryIcons[group.category?.icon?.toLowerCase()] ||
+                            categoryIcons[group.category?.icon] ||
                             categoryIcons.default;
 
                         return (

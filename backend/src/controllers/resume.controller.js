@@ -148,3 +148,110 @@ export const getDashboardResume = async (req, res) => {
         return res.status(500).json({ message: "Error al obtener dashboard" });
     }
 };
+
+export const getNotifications = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const today = now();
+        const in3Days = now().add(3, "days").toDate();
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { notificationsLastSeenAt: true },
+        });
+        // Si el usuario nunca abrió el menú de notificaciones, todo cuenta como nuevo
+        const lastSeenAt = user?.notificationsLastSeenAt ?? new Date(0);
+        const startOfToday = today.clone().startOf("day").toDate();
+
+        const [overduePayments, soonPayments, soonGoals] = await Promise.all([
+            // Pagos vencidos
+            prisma.payment.findMany({
+                where: { userId, status: "PENDING", scheduledAt: { lt: today.toDate() } },
+                orderBy: { scheduledAt: "asc" },
+                select: { id: true, name: true, amount: true, scheduledAt: true, type: true },
+            }),
+            // Pagos próximos a vencer (próximos 3 días)
+            prisma.payment.findMany({
+                where: {
+                    userId,
+                    status: "PENDING",
+                    scheduledAt: { gte: today.toDate(), lte: in3Days },
+                },
+                orderBy: { scheduledAt: "asc" },
+                select: { id: true, name: true, amount: true, scheduledAt: true, type: true },
+            }),
+            // Metas de ahorro próximas a vencer y no completadas
+            prisma.savingGoal.findMany({
+                where: {
+                    userId,
+                    status: "ACTIVE",
+                    deadline: { gte: today.toDate(), lte: in3Days },
+                },
+                select: { id: true, name: true, targetAmount: true, currentAmount: true, deadline: true },
+            }),
+        ]);
+
+        // El "isNew" no depende de la fecha del pago/meta, sino de si el
+        // usuario ya abrió el menú HOY. Comparamos contra el inicio del día
+        // (no contra "ahora") para que no se reactive solo por el paso del
+        // tiempo entre que se marca como visto y el siguiente refetch.
+        const isNew = lastSeenAt < startOfToday;
+
+        const notifications = [
+            ...overduePayments.map((p) => ({
+                id: `payment-overdue-${p.id}`,
+                type: "PAYMENT_OVERDUE",
+                title: "Pago vencido",
+                message: `"${p.name}" venció el ${fmt(p.scheduledAt)}`,
+                severity: "danger",
+                date: p.scheduledAt,
+                isNew,
+            })),
+            ...soonPayments.map((p) => ({
+                id: `payment-soon-${p.id}`,
+                type: "PAYMENT_DUE_SOON",
+                title: "Pago próximo",
+                message: `"${p.name}" vence el ${fmt(p.scheduledAt)}`,
+                severity: "warning",
+                date: p.scheduledAt,
+                isNew,
+            })),
+            ...soonGoals.map((g) => ({
+                id: `goal-soon-${g.id}`,
+                type: "GOAL_DEADLINE_SOON",
+                title: "Meta por vencer",
+                message: `"${g.name}" vence el ${fmt(g.deadline)} (llevas ${g.currentAmount}/${g.targetAmount})`,
+                severity: "info",
+                date: g.deadline,
+                isNew,
+            })),
+        ].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        const unseenCount = notifications.filter((n) => n.isNew).length;
+
+        return res.json({
+            count: notifications.length,
+            unseenCount,
+            notifications,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error al obtener notificaciones" });
+    }
+};
+
+export const markNotificationsSeen = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { notificationsLastSeenAt: new Date() },
+        });
+
+        return res.json({ ok: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error al marcar notificaciones como vistas" });
+    }
+};

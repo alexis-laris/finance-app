@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { useNavigate } from "react-router-dom";
+import NotificationBell from "../utils/NotificationBell";
 
 export default function DashboardLayout() {
 
@@ -34,32 +35,37 @@ export default function DashboardLayout() {
                 <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
 
 
-                    <header className="flex items-center justify-between px-6 py-3 bg-[#0B0F27] sticky top-0 z-10 overflow-hidden">
+                    <header className="relative flex items-center justify-between px-6 py-3 bg-[#0B0F27] top-0 z-10">
 
 
-                        <div className="absolute -right-16 top-1/2 -translate-y-1/2 w-64 h-16 rounded-full bg-[#07D896]/10 blur-3xl pointer-events-none" />
-
-
-                        <div className="absolute bottom-0 left-0 h-px w-full bg-linear-to-r from-transparent via-[#07D896]/40 to-[#07D896]/60 pointer-events-none" />
+                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                            <div className="absolute -right-16 top-1/2 -translate-y-1/2 w-64 h-16 rounded-full bg-[#07D896]/10 blur-3xl" />
+                            <div className="absolute bottom-0 left-0 h-px w-full bg-linear-to-r from-transparent via-[#07D896]/40 to-[#07D896]/60" />
+                        </div>
 
 
                         <SidebarTrigger className="text-[#A9ACB7] hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200 cursor-pointer relative z-10" />
 
 
-                        <div
-                            className="flex items-center gap-3 relative z-10 cursor-pointer"
-                            onClick={() => navigate("/dashboard/user")}
-                        >
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-medium text-white">{user?.name}</p>
-                                <p className="text-xs text-[#A9ACB7]">{user?.email}</p>
-                            </div>
-                            <div className="w-9 h-9 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
-                                {user?.avatarUrl ? (
-                                    <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    user?.name?.charAt(0)
-                                )}
+                        <div className="flex items-center gap-4 relative z-10">
+
+                            <NotificationBell />
+
+                            <div
+                                className="flex items-center gap-3 cursor-pointer"
+                                onClick={() => navigate("/dashboard/user")}
+                            >
+                                <div className="text-right hidden sm:block">
+                                    <p className="text-sm font-medium text-white">{user?.name}</p>
+                                    <p className="text-xs text-[#A9ACB7]">{user?.email}</p>
+                                </div>
+                                <div className="w-9 h-9 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
+                                    {user?.avatarUrl ? (
+                                        <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        user?.name?.charAt(0)
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </header>

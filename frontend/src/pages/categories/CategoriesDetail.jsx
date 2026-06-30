@@ -31,7 +31,7 @@ const categoryIcons = {
     gamepad2: Gamepad2,
     wifi: Wifi,
     smartphone: Smartphone,
-    piggybank: PiggyBank,
+    piggyBank: PiggyBank,
     default: Folder,
 };
 
@@ -78,7 +78,6 @@ export default function CategoriesDetail() {
     const colorBg = `${color}12`;
     const colorBorder = `${color}40`;
     const colorBorderHover = `${color}70`;
-    const colorGlow = `${color}33`;
 
     const hasExpenses = category.expenses?.length > 0;
     const hasPayments = category.payments?.length > 0;

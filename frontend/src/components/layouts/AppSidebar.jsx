@@ -82,24 +82,24 @@ export function AppSidebar() {
                                             isActive={isActive}
                                             tooltip={item.name}
                                             className={`
-                                                w-full
-                                                justify-start
-                                                rounded-full
-                                                transition-all
-                                                duration-300
-                                                cursor-pointer
-                                                h-10
-                                                ${isActive
+            relative
+            w-full
+            h-10
+            rounded-full
+            transition-all
+            duration-300
+            cursor-pointer
+            ${isActive
                                                     ? "bg-[#07D896]/15 text-[#07D896] hover:bg-[#07D896]/20"
                                                     : "text-[#A9ACB7] hover:bg-white/10 hover:text-white"
                                                 }
-                                            `}
+        `}
                                         >
-
                                             <NavLink
                                                 to={item.path}
                                                 end={item.end}
-                                                className={`flex items-center gap-3 w-full h-full cursor-pointer ${isCollapsed ? "justify-center px-0" : "px-3"}`}
+                                                className={`absolute inset-0 flex items-center gap-3 cursor-pointer rounded-full ${isCollapsed ? "justify-center px-0" : "justify-start px-3"
+                                                    }`}
                                             >
                                                 <Icon size={18} className="shrink-0" />
                                                 {!isCollapsed && <span>{item.name}</span>}
@@ -120,7 +120,7 @@ export function AppSidebar() {
 
                 {!isCollapsed && (
                     <div className="flex items-center gap-3 px-2 py-1">
-                        <div className="w-8 h-8 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
+                        <div className="cursor-pointer w-8 h-8 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden" onClick={() => navigate("/dashboard/user")}>
                             {user?.avatarUrl ? (
                                 <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
                             ) : (
