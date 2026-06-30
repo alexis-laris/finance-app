@@ -85,7 +85,14 @@ export default function NotificationBell() {
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-medium text-white">{n.title}</p>
-                                            <p className="text-xs text-[#A9ACB7] leading-snug">{n.message}</p>
+
+                                            <p className="text-xs text-[#A9ACB7] leading-snug">
+                                                {n.message}
+                                            </p>
+
+                                            <p className="text-[11px] text-[#6B7280] mt-1">
+                                                {n.dateLabel}
+                                            </p>
                                         </div>
                                     </div>
                                 );

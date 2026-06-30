@@ -36,7 +36,7 @@ const categoryIcons = {
     home: Home,
     shoppingBag: ShoppingBag,
     utensilsCrossed: UtensilsCrossed,
-    heartPulse: HeartPulse,
+    health: HeartPulse,
     creditCard: CreditCard,
     gamepad2: Gamepad2,
     wifi: Wifi,

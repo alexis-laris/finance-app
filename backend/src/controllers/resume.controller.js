@@ -205,6 +205,7 @@ export const getNotifications = async (req, res) => {
                 message: `"${p.name}" venció el ${fmt(p.scheduledAt)}`,
                 severity: "danger",
                 date: p.scheduledAt,
+                dateLabel: fmt(p.scheduledAt),
                 isNew,
             })),
             ...soonPayments.map((p) => ({
@@ -214,6 +215,7 @@ export const getNotifications = async (req, res) => {
                 message: `"${p.name}" vence el ${fmt(p.scheduledAt)}`,
                 severity: "warning",
                 date: p.scheduledAt,
+                dateLabel: fmt(p.scheduledAt),
                 isNew,
             })),
             ...soonGoals.map((g) => ({
@@ -223,9 +225,10 @@ export const getNotifications = async (req, res) => {
                 message: `"${g.name}" vence el ${fmt(g.deadline)} (llevas ${g.currentAmount}/${g.targetAmount})`,
                 severity: "info",
                 date: g.deadline,
+                dateLabel: fmt(g.deadline),
                 isNew,
             })),
-        ].sort((a, b) => new Date(a.date) - new Date(b.date));
+        ].sort((a, b) => a.date - b.date);
 
         const unseenCount = notifications.filter((n) => n.isNew).length;
 
