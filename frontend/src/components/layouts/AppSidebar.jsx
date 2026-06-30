@@ -120,8 +120,12 @@ export function AppSidebar() {
 
                 {!isCollapsed && (
                     <div className="flex items-center gap-3 px-2 py-1">
-                        <div className="w-8 h-8 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0">
-                            {user?.name?.charAt(0)}
+                        <div className="w-8 h-8 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
+                            {user?.avatarUrl ? (
+                                <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+                            ) : (
+                                user?.name?.charAt(0)
+                            )}
                         </div>
                         <div className="min-w-0">
                             <p className="text-sm font-medium text-white truncate">{user?.name}</p>
