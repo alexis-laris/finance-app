@@ -84,18 +84,20 @@ export default function PaymentForm({ payment, onSubmit, onClose }) {
 
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e?.preventDefault?.();
 
         const submitData = {
             name: form.name.trim(),
             amount: Number(form.amount),
             description: form.description.trim(),
-            scheduledAt: form.scheduledAt,
+            scheduledAt: form.scheduledAt
+                ? new Date(form.scheduledAt).toISOString()
+                : undefined,
             type: form.type,
             categoryId: form.categoryId,
         };
 
-        console.log("Enviando pago:", submitData);
+
 
         onSubmit(submitData);
 

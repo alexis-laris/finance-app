@@ -119,23 +119,12 @@ export default function Payments() {
         setOpen(true);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const submitData = {
-            name: form.name.trim(),
-            amount: Number(form.amount),
-            description: form.description.trim(),
-            scheduledAt: form.scheduledAt
-                ? new Date(form.scheduledAt).toISOString()
-                : undefined,
-            type: form.type,
-            categoryId: form.categoryId,
-        };
-
-        onSubmit(submitData);
-
-        if (!isEditing) resetForm();
+    const handleSubmit = (data) => {
+        if (editingPayment) {
+            updateMutation.mutate({ id: editingPayment.id, data });
+        } else {
+            createMutation.mutate(data);
+        }
     };
 
     const handleCloseModal = () => {
