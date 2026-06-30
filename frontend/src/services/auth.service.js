@@ -20,3 +20,12 @@ export const logoutRequest = async () => {
     localStorage.removeItem("token");
     return { message: "Logged out" };
 };
+
+export const updateProfileRequest = async (formData) => {
+    const res = await api.put("/auth/profile", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return res.data;
+};

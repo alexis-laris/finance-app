@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import { supabase } from "../lib/supabase.js";
+import { v4 as uuidv4 } from "uuid";
+
 
 const prisma = new PrismaClient();
 
@@ -65,12 +68,13 @@ export const login = async (req, res) => {
         );
 
         return res.json({
-            token, // 👈 devuelves el token
+            token,
             user: {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                avatarUrl: user.avatarUrl,
             }
         });
 
@@ -99,7 +103,8 @@ export const me = async (req, res) => {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role
+            role: user.role,
+            avatarUrl: user.avatarUrl,
         });
 
     } catch (error) {
@@ -109,4 +114,75 @@ export const me = async (req, res) => {
 
 export const logout = async (req, res) => {
     return res.json({ message: "Logged out" });
+};
+
+
+export const updateProfile = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "No token" });
+        }
+
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const { name, email } = req.body;
+        let avatarUrl = user.avatarUrl;
+
+        // Si vino un archivo (multer lo pone en req.file)
+        if (req.file) {
+            const fileExt = req.file.originalname.split(".").pop();
+            const fileName = `${user.id}-${uuidv4()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from("avatars")
+                .upload(fileName, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: true,
+                });
+
+            if (uploadError) {
+                console.error(uploadError);
+                return res.status(500).json({ message: "Error al subir imagen" });
+            }
+
+            // Si ya tenía avatar anterior, lo borramos para no acumular basura
+            if (user.avatarUrl) {
+                const oldFileName = user.avatarUrl.split("/").pop();
+                await supabase.storage.from("avatars").remove([oldFileName]);
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from("avatars")
+                .getPublicUrl(fileName);
+
+            avatarUrl = publicUrlData.publicUrl;
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                name: name ?? user.name,
+                email: email ?? user.email,
+                avatarUrl,
+            },
+        });
+
+        return res.json({
+            id: updatedUser.id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            avatarUrl: updatedUser.avatarUrl,
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
 };

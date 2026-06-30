@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import DashboardLayout from "./components/layouts/DashboardLayout.jsx";
 import PublicLayout from "./components/layouts/PublicLayout";
 
+import User from "./pages/user/User";
 import Resume from "./pages/resume/Resume";
 import Categories from "./pages/categories/Categories";
 import CategoriesDetail from "./pages/categories/CategoriesDetail";
@@ -42,6 +43,7 @@ export default function App() {
           }
         >
           <Route index element={<Resume />} />
+          <Route path="user" element={<User />} />
           <Route path="categories" element={<Categories />} />
           <Route path="categories/:id" element={<CategoriesDetail />} />
           <Route path="expenses" element={<Expenses />} />

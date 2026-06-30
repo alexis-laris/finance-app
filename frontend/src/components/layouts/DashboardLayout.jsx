@@ -2,9 +2,13 @@ import { useAuth } from "../../hooks/useAuth";
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardLayout() {
+
     const { data: user } = useAuth();
+
+    const navigate = useNavigate();
 
     return (
         <SidebarProvider
@@ -42,13 +46,20 @@ export default function DashboardLayout() {
                         <SidebarTrigger className="text-[#A9ACB7] hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200 cursor-pointer relative z-10" />
 
 
-                        <div className="flex items-center gap-3 relative z-10">
+                        <div
+                            className="flex items-center gap-3 relative z-10 cursor-pointer"
+                            onClick={() => navigate("/dashboard/user")}
+                        >
                             <div className="text-right hidden sm:block">
                                 <p className="text-sm font-medium text-white">{user?.name}</p>
                                 <p className="text-xs text-[#A9ACB7]">{user?.email}</p>
                             </div>
-                            <div className="w-9 h-9 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0">
-                                {user?.name?.charAt(0)}
+                            <div className="w-9 h-9 rounded-full bg-[#07D896] text-gray-900 flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden">
+                                {user?.avatarUrl ? (
+                                    <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    user?.name?.charAt(0)
+                                )}
                             </div>
                         </div>
                     </header>
