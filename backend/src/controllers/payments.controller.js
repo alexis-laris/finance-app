@@ -2,10 +2,19 @@ import { PrismaClient } from "@prisma/client";
 import moment from "moment-timezone";
 import "moment/locale/es.js";
 
-
 const prisma = new PrismaClient();
 
+const TZ = "America/Mexico_City";
+const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
+
 moment.locale("es");
+
+const fmt = (date) =>
+    date
+        ? moment(date).tz(TZ).locale("es").format(DATETIME_FORMAT)
+        : null;
+
+const now = () => moment().tz(TZ);
 
 export const createPayment = async (req, res) => {
     try {
@@ -39,9 +48,6 @@ export const createPayment = async (req, res) => {
     }
 };
 
-
-
-
 export const getPayments = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -58,10 +64,8 @@ export const getPayments = async (req, res) => {
 
         const formattedPayments = payments.map((p) => ({
             ...p,
-            scheduledAtLabel: moment(p.scheduledAt).tz("America/Mexico_City").locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A"),
-            paidAtLabel: p.paidAt
-                ? moment(p.paidAt).locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
+            scheduledAtLabel: fmt(p.scheduledAt),
+            paidAtLabel: fmt(p.paidAt),
         }));
 
         res.json(formattedPayments);
@@ -70,7 +74,6 @@ export const getPayments = async (req, res) => {
         res.status(500).json({ message: "Error fetching payments" });
     }
 };
-
 
 export const getPaymentById = async (req, res) => {
     try {
@@ -91,13 +94,16 @@ export const getPaymentById = async (req, res) => {
             return res.status(404).json({ message: "Payment not found" });
         }
 
-        res.json(payment);
+        res.json({
+            ...payment,
+            scheduledAtLabel: fmt(payment.scheduledAt),
+            paidAtLabel: fmt(payment.paidAt),
+        });
     } catch (error) {
         console.error("getPaymentById error:", error);
         res.status(500).json({ message: "Error fetching payment" });
     }
 };
-
 
 export const updatePayment = async (req, res) => {
     try {
@@ -112,7 +118,6 @@ export const updatePayment = async (req, res) => {
             scheduledAt,
             categoryId,
         } = req.body;
-
 
         const payment = await prisma.payment.findFirst({
             where: { id, userId },
@@ -136,13 +141,16 @@ export const updatePayment = async (req, res) => {
             },
         });
 
-        res.json(updated);
+        res.json({
+            ...updated,
+            scheduledAtLabel: fmt(updated.scheduledAt),
+            paidAtLabel: fmt(updated.paidAt),
+        });
     } catch (error) {
         console.error("updatePayment error:", error);
         res.status(500).json({ message: "Error updating payment" });
     }
 };
-
 
 export const deletePayment = async (req, res) => {
     try {
@@ -168,8 +176,6 @@ export const deletePayment = async (req, res) => {
     }
 };
 
-
-
 export const togglePaymentStatus = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -189,15 +195,14 @@ export const togglePaymentStatus = async (req, res) => {
             where: { id },
             data: {
                 status: isPaid ? "PENDING" : "PAID",
-                paidAt: isPaid ? null : new Date(),
+                paidAt: isPaid ? null : now().toDate(),
             },
         });
 
         res.json({
             ...updated,
-            paidAtLabel: updated.paidAt
-                ? moment(updated.paidAt).tz("America/Mexico_City").locale("es").format("D [de] MMMM [del] YYYY [a la] h:mm A")
-                : null,
+            scheduledAtLabel: fmt(updated.scheduledAt),
+            paidAtLabel: fmt(updated.paidAt),
         });
     } catch (error) {
         console.error("togglePaymentStatus error:", error);
