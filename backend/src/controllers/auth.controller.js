@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { supabase } from "../lib/supabase.js";
 import { v4 as uuidv4 } from "uuid";
+import { supabase } from "../lib/supabase.js";
 
 
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma.js";
+
 
 const isProduction = process.env.NODE_ENV === "production";
 

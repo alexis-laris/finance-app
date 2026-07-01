@@ -1,13 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import moment from "moment-timezone";
-import "moment/locale/es.js";
+import { prisma } from "../lib/prisma.js";
 
-const prisma = new PrismaClient();
+moment.locale("es");
 
 const TZ = "America/Mexico_City";
 const DATETIME_FORMAT = "D [de] MMMM [del] YYYY [a la] h:mm A";
 
-moment.locale("es");
 
 const fmt = (date) =>
     date
